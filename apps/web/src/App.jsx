@@ -1,9 +1,8 @@
-import React from 'react'
-
+import Navbar from './layouts/Navbar'
 const App = () => {
   return (
-    <div className="flex items-center justify-center h-screen text-3xl font-bold text-blue-500">
-      bdakbdwb
+    <div >
+      <Navbar />
     </div>
   )
 }
