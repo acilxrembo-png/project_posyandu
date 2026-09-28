@@ -1,0 +1,39 @@
+# Dependencies
+node_modules/
+
+# pnpm
+.pnpm-store/
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# Build
+dist/
+build/
+.next/
+.nuxt/
+.output/
+
+# Logs
+*.log
+logs/
+
+# Database
+*.db
+*.db-journal
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+
+# Temporary
+.tmp/
+.temp/
