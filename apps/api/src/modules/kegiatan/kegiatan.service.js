@@ -37,6 +37,30 @@ async function list(query, user) {
   return { data, meta: buildMeta(page, limit, total) };
 }
 
+async function listPublic() {
+  const today = Object.fromEntries(
+    new Intl.DateTimeFormat("en-US", {
+      timeZone: "Asia/Jakarta",
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    })
+      .formatToParts(new Date())
+      .filter(({ type }) => type !== "literal")
+      .map(({ type, value }) => [type, value]),
+  );
+  const startOfToday = new Date(Date.UTC(Number(today.year), Number(today.month) - 1, Number(today.day)));
+
+  const data = await prisma.kegiatan.findMany({
+    where: { tanggal: { gte: startOfToday } },
+    select: { id: true, tanggal: true, tema: true, lokasi: true },
+    orderBy: { tanggal: "asc" },
+    take: 6,
+  });
+
+  return { data };
+}
+
 // GET /:id  -> detail satu data
 async function getById(id, user) {
   const item = await prisma.kegiatan.findFirst({
@@ -82,4 +106,4 @@ async function remove(id, user) {
   await prisma.kegiatan.delete({ where: { id } });
 }
 
-export { list, getById, create, update, remove };
+export { list, listPublic, getById, create, update, remove };

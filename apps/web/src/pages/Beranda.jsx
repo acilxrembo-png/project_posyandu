@@ -1,28 +1,30 @@
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { HiArrowRight, HiOutlineCalendar, HiOutlineChartBar, HiOutlineClipboardList, HiOutlineClock, HiOutlineHeart, HiOutlineLocationMarker, HiOutlinePhone, HiOutlineShieldCheck, HiOutlineUserGroup } from 'react-icons/hi';
+import { HiArrowRight, HiOutlineCalendar, HiOutlineChartBar, HiOutlineClipboardList, HiOutlineHeart, HiOutlineLocationMarker, HiOutlinePhone, HiOutlineShieldCheck, HiOutlineUserGroup } from 'react-icons/hi';
+import api from '../services/api';
 
 const HIGHLIGHTS = [
-  { teks: 'Pendampingan ibu & anak', ikon: HiOutlineHeart, warna: 'bg-rose-50 text-rose-700' },
-  { teks: 'Pertumbuhan terpantau', ikon: HiOutlineChartBar, warna: 'bg-sky-50 text-sky-700' },
-  { teks: 'Didukung kader setempat', ikon: HiOutlineUserGroup, warna: 'bg-emerald-50 text-emerald-800' },
-  { teks: 'Informasi layanan berkala', ikon: HiOutlineCalendar, warna: 'bg-amber-50 text-amber-800' },
+  { teks: 'Pendampingan ibu & anak', ikon: HiOutlineHeart, warna: 'bg-[#f1eee6] text-[#2b4764]' },
+  { teks: 'Pertumbuhan terpantau', ikon: HiOutlineChartBar, warna: 'bg-[#f2e8d3] text-[#8a5a14]' },
+  { teks: 'Didukung kader setempat', ikon: HiOutlineUserGroup, warna: 'bg-[#f1eee6] text-[#2b4764]' },
+  { teks: 'Informasi layanan berkala', ikon: HiOutlineCalendar, warna: 'bg-[#f2e8d3] text-[#8a5a14]' },
 ];
 
 const LAYANAN = [
-  { nama: 'Penimbangan balita', isi: 'Pantau berat dan tinggi badan anak secara berkala bersama kader.', ikon: HiOutlineChartBar, warna: 'bg-rose-50 text-rose-700' },
-  { nama: 'Imunisasi', isi: 'Dapatkan informasi imunisasi untuk membantu melindungi kesehatan anak.', ikon: HiOutlineShieldCheck, warna: 'bg-sky-50 text-sky-700' },
-  { nama: 'Kesehatan ibu', isi: 'Dukungan pemeriksaan dan edukasi kesehatan selama kehamilan.', ikon: HiOutlineHeart, warna: 'bg-emerald-50 text-emerald-800' },
-  { nama: 'Edukasi keluarga', isi: 'Berbagi informasi seputar gizi, tumbuh kembang, dan hidup sehat.', ikon: HiOutlineClipboardList, warna: 'bg-amber-50 text-amber-800' },
-];
-
-const AGENDA = [
-  { tgl: '15', bulan: 'Okt', judul: 'Penimbangan dan imunisasi balita', jam: '08.00–11.00 WIB' },
-  { tgl: '22', bulan: 'Okt', judul: 'Kelas ibu hamil', jam: '09.00–10.30 WIB' },
+  { nama: 'Penimbangan balita', isi: 'Pantau berat dan tinggi badan anak secara berkala bersama kader.', ikon: HiOutlineChartBar, warna: 'bg-[#f1eee6] text-[#2b4764]' },
+  { nama: 'Imunisasi', isi: 'Dapatkan informasi imunisasi untuk membantu melindungi kesehatan anak.', ikon: HiOutlineShieldCheck, warna: 'bg-[#f2e8d3] text-[#8a5a14]' },
+  { nama: 'Kesehatan ibu', isi: 'Dukungan pemeriksaan dan edukasi kesehatan selama kehamilan.', ikon: HiOutlineHeart, warna: 'bg-[#f1eee6] text-[#2b4764]' },
+  { nama: 'Edukasi keluarga', isi: 'Berbagi informasi seputar gizi, tumbuh kembang, dan hidup sehat.', ikon: HiOutlineClipboardList, warna: 'bg-[#f2e8d3] text-[#8a5a14]' },
 ];
 
 // Warna aksen: biru kabut tua (pengganti hijau) dan emas hangat, diambil dari gradasi referensi
 const cincin = 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2b4764] focus-visible:ring-offset-2';
 const kaca = 'border border-white/70 bg-white/65 backdrop-blur-md shadow-lg shadow-[#2b4764]/10';
+
+const formatTanggal = (tanggal) => new Intl.DateTimeFormat('id-ID', {
+  day: 'numeric',
+  month: 'short',
+}).format(new Date(`${tanggal.slice(0, 10)}T00:00:00`));
 
 function BagianPembuka() {
   return (
@@ -140,33 +142,66 @@ function DaftarLayanan() {
 }
 
 function JadwalKegiatan() {
+  const [agenda, setAgenda] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    let active = true;
+
+    api.get('/informasi/kegiatan')
+      .then(({ data }) => {
+        if (active) setAgenda(data.data.slice(0, 3));
+      })
+      .catch(() => {
+        if (active) setError('Jadwal belum dapat dimuat. Silakan buka halaman informasi atau hubungi kader.');
+      })
+      .finally(() => {
+        if (active) setLoading(false);
+      });
+
+    return () => {
+      active = false;
+    };
+  }, []);
+
   return (
     <section className="px-5 pb-20 pt-8 sm:px-8 md:pb-24">
       <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[1.35fr_0.85fr]">
         <div>
           <span className="text-xs font-bold uppercase tracking-[0.2em] text-[#1f3650]">Catat tanggalnya</span>
           <h2 className="mt-3 text-3xl font-semibold tracking-tight text-slate-900 sm:text-4xl">Agenda Posyandu</h2>
-          <p className="mt-3 max-w-xl leading-7 text-slate-800">Simpan jadwal berikut dan datang sesuai waktu layanan. Jangan lupa membawa buku KIA atau KMS.</p>
-          <ul className="mt-7 space-y-3">
-            {AGENDA.map(({ tgl, bulan, judul, jam }) => (
-              <li key={tgl}>
+          <p className="mt-3 max-w-xl leading-7 text-slate-800">Jadwal mendatang yang ditampilkan diambil dari kegiatan yang dicatat petugas. Konfirmasikan perubahan kepada kader.</p>
+          {loading && <p role="status" className="mt-7 rounded-xl bg-white/70 p-5 text-sm text-slate-600">Memuat jadwal kegiatan...</p>}
+          {error && <p role="alert" className="mt-7 rounded-xl border border-rose-200 bg-rose-50 p-5 text-sm text-rose-800">{error}</p>}
+          {!loading && !error && agenda.length === 0 && (
+            <p className="mt-7 rounded-xl border border-white/70 bg-white/70 p-5 leading-relaxed text-slate-600">
+              Belum ada jadwal mendatang yang diumumkan. Silakan periksa kembali nanti atau hubungi kader untuk konfirmasi.
+            </p>
+          )}
+          {!loading && !error && agenda.length > 0 && (
+            <ul className="mt-7 space-y-3">
+            {agenda.map((kegiatan) => (
+              <li key={kegiatan.id}>
                 <Link to="/informasi" className={`group flex items-center gap-4 rounded-xl p-4 transition duration-200 hover:bg-white/85 sm:p-5 ${kaca} ${cincin}`}>
                   <span className="flex h-[4.5rem] w-[4.5rem] shrink-0 flex-col items-center justify-center rounded-xl bg-amber-100/90 text-[#8a5a14]">
-                    <span className="text-2xl font-semibold leading-none">{tgl}</span>
-                    <span className="mt-1 text-xs font-bold uppercase tracking-wider">{bulan}</span>
+                    <span className="text-lg font-semibold leading-none">{formatTanggal(kegiatan.tanggal)}</span>
                   </span>
                   <span className="min-w-0 flex-1">
-                    <span className="block font-semibold leading-snug text-slate-900">{judul}</span>
-                    <span className="mt-2 flex items-center gap-1.5 text-sm text-slate-600">
-                      <HiOutlineClock className="h-4 w-4 text-[#2b4764]" />
-                      {jam}
-                    </span>
+                    <span className="block font-semibold leading-snug text-slate-900">{kegiatan.tema || 'Kegiatan Posyandu'}</span>
+                    {kegiatan.lokasi && (
+                      <span className="mt-2 flex items-center gap-1.5 text-sm text-slate-600">
+                        <HiOutlineLocationMarker className="h-4 w-4 text-[#2b4764]" />
+                        {kegiatan.lokasi}
+                      </span>
+                    )}
                   </span>
                   <HiArrowRight className="h-5 w-5 shrink-0 text-slate-400 transition group-hover:translate-x-1 group-hover:text-[#2b4764]" />
                 </Link>
               </li>
             ))}
-          </ul>
+            </ul>
+          )}
           <Link to="/informasi" className={`mt-5 inline-flex items-center gap-2 text-sm font-semibold text-[#1f3650] transition hover:gap-3 ${cincin}`}>
             Lihat informasi lainnya <HiArrowRight />
           </Link>

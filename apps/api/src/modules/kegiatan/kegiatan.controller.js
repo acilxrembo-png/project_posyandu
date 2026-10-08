@@ -6,6 +6,11 @@ async function list(req, res) {
   res.json(result);
 }
 
+async function listPublic(req, res) {
+  const result = await kegiatanService.listPublic();
+  res.json(result);
+}
+
 // GET /:id
 async function getById(req, res) {
   const data = await kegiatanService.getById(req.params.id, req.user);
@@ -30,4 +35,4 @@ async function remove(req, res) {
   res.json({ message: "Data berhasil dihapus" });
 }
 
-export { list, getById, create, update, remove };
+export { list, listPublic, getById, create, update, remove };

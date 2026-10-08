@@ -1,107 +1,53 @@
-import { HiOutlineLocationMarker, HiOutlinePhone, HiOutlineMail } from 'react-icons/hi';
+import { Link } from 'react-router-dom';
+import { HiOutlineLocationMarker, HiOutlineUserGroup, HiOutlineCalendar } from 'react-icons/hi';
 
-const Kontak = () => {
-  return (
-    <div className="min-h-screen font-sans bg-white selection:bg-blue-100">
-      <main>
-        {/* HEADER SECTION */}
-        <section className="px-6 py-16 mx-auto max-w-7xl md:py-24 text-center">
-          <h1 className="text-4xl font-extrabold md:text-5xl text-slate-900 mb-6">Hubungi Kami</h1>
-          <p className="max-w-2xl mx-auto text-lg leading-relaxed text-slate-600">Punya pertanyaan seputar layanan atau jadwal kegiatan Posyandu RW 08? Jangan ragu untuk menghubungi kami melalui kontak di bawah ini.</p>
-        </section>
+const Kontak = () => (
+  <main className="min-h-screen px-6 pb-24">
+    <section className="mx-auto max-w-7xl py-16 text-center md:py-24">
+      <span className="mb-6 inline-block rounded-full bg-[#f1eee6] px-4 py-1.5 text-sm font-medium text-[#2b4764]">
+        Posyandu RW 08
+      </span>
+      <h1 className="mb-6 text-4xl font-extrabold text-slate-900 md:text-5xl">Hubungi kader</h1>
+      <p className="mx-auto max-w-2xl text-lg leading-relaxed text-slate-600">
+        Untuk memastikan informasi tetap akurat, tanyakan jadwal dan layanan secara langsung kepada
+        kader Posyandu RW 08.
+      </p>
+    </section>
 
-        {/* KONTAK & FORM SECTION */}
-        <section className="px-6 pb-24 mx-auto max-w-7xl">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24">
-            {/* Informasi Kontak Kiri */}
-            <div className="space-y-10">
-              <div>
-                <h2 className="text-2xl font-bold text-slate-900 mb-6">Informasi Kontak</h2>
-                <div className="space-y-6">
-                  <div className="flex items-start gap-4">
-                    <div className="p-3 text-blue-600 bg-blue-50 rounded-xl">
-                      <HiOutlineLocationMarker className="w-6 h-6" />
-                    </div>
-                    <div>
-                      <h3 className="font-bold text-slate-900">Alamat Posyandu</h3>
-                      <p className="text-slate-600 mt-1">
-                        Balai Warga RW 08, Jl. Cihampelas No. 123,
-                        <br />
-                        Bandung, Jawa Barat
-                      </p>
-                    </div>
-                  </div>
+    <section className="mx-auto grid max-w-5xl gap-6 md:grid-cols-2" aria-label="Cara mendapatkan informasi">
+      <article className="rounded-3xl border border-[#e8dcc2] bg-white/80 p-8 shadow-sm">
+        <span className="inline-flex rounded-2xl bg-[#f1eee6] p-3 text-[#2b4764]">
+          <HiOutlineUserGroup className="h-7 w-7" aria-hidden="true" />
+        </span>
+        <h2 className="mt-5 text-xl font-bold text-slate-900">Tanyakan kepada kader</h2>
+        <p className="mt-3 leading-relaxed text-slate-600">
+          Temui kader Posyandu di lingkungan RW 08 untuk informasi layanan, pendaftaran, atau
+          perubahan jadwal. Situs ini belum menyediakan pengiriman pesan langsung.
+        </p>
+      </article>
 
-                  <div className="flex items-start gap-4">
-                    <div className="p-3 text-emerald-600 bg-emerald-50 rounded-xl">
-                      <HiOutlinePhone className="w-6 h-6" />
-                    </div>
-                    <div>
-                      <h3 className="font-bold text-slate-900">Nomor Telepon / WhatsApp</h3>
-                      <p className="text-slate-600 mt-1">+62 812-3456-7890 (Kader Jaga)</p>
-                    </div>
-                  </div>
+      <article className="rounded-3xl border border-[#e8dcc2] bg-white/80 p-8 shadow-sm">
+        <span className="inline-flex rounded-2xl bg-[#f1eee6] p-3 text-[#2b4764]">
+          <HiOutlineLocationMarker className="h-7 w-7" aria-hidden="true" />
+        </span>
+        <h2 className="mt-5 text-xl font-bold text-slate-900">Lokasi pelayanan</h2>
+        <p className="mt-3 leading-relaxed text-slate-600">
+          Kegiatan dilaksanakan di lokasi yang ditetapkan untuk setiap jadwal. Periksa informasi
+          kegiatan atau konfirmasikan lokasi kepada kader sebelum berangkat.
+        </p>
+      </article>
+    </section>
 
-                  <div className="flex items-start gap-4">
-                    <div className="p-3 text-rose-600 bg-rose-50 rounded-xl">
-                      <HiOutlineMail className="w-6 h-6" />
-                    </div>
-                    <div>
-                      <h3 className="font-bold text-slate-900">Email</h3>
-                      <p className="text-slate-600 mt-1">posyandurw08@example.com</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex min-h-48 items-center gap-4 rounded-2xl border border-blue-100 bg-blue-50 px-6">
-                <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl bg-white text-blue-600 shadow-sm">
-                  <HiOutlineLocationMarker className="h-6 w-6" />
-                </div>
-                <div>
-                  <h3 className="font-bold text-slate-900">Lokasi Pelayanan</h3>
-                  <p className="mt-1 text-sm leading-6 text-slate-600">Balai Warga RW 08 menjadi pusat kegiatan dan pelayanan Posyandu.</p>
-                </div>
-              </div>
-            </div>
-
-            {/* Form Pesan Kanan */}
-            <div className="p-8 bg-white border border-slate-100 rounded-3xl shadow-xl shadow-slate-100/50">
-              <h2 className="text-2xl font-bold text-slate-900 mb-6">Kirim Pesan</h2>
-              <form className="space-y-5" onSubmit={(e) => e.preventDefault()}>
-                <div>
-                  <label htmlFor="nama" className="block text-sm font-medium text-slate-700 mb-2">
-                    Nama Lengkap
-                  </label>
-                  <input type="text" id="nama" className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all" placeholder="Masukkan nama Anda" />
-                </div>
-                <div>
-                  <label htmlFor="whatsapp" className="block text-sm font-medium text-slate-700 mb-2">
-                    No. WhatsApp
-                  </label>
-                  <input type="tel" id="whatsapp" className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all" placeholder="Contoh: 0812..." />
-                </div>
-                <div>
-                  <label htmlFor="pesan" className="block text-sm font-medium text-slate-700 mb-2">
-                    Pesan Anda
-                  </label>
-                  <textarea
-                    id="pesan"
-                    rows="4"
-                    className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all resize-none"
-                    placeholder="Tulis pertanyaan atau masukan Anda di sini..."
-                  ></textarea>
-                </div>
-                <button type="submit" className="w-full px-8 py-3.5 font-bold text-white transition-all bg-blue-600 rounded-xl hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-200">
-                  Kirim Pesan Sekarang
-                </button>
-              </form>
-            </div>
-          </div>
-        </section>
-      </main>
-    </div>
-  );
-};
+    <nav aria-label="Tautan informasi" className="mx-auto mt-10 flex max-w-5xl flex-wrap gap-3">
+      <Link to="/informasi" className="inline-flex items-center gap-2 rounded-xl bg-[#2b4764] px-5 py-3 font-semibold text-white transition hover:bg-[#1f3650] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2b4764] focus-visible:ring-offset-2">
+        <HiOutlineCalendar className="h-5 w-5" aria-hidden="true" />
+        Lihat jadwal kegiatan
+      </Link>
+      <Link to="/layanan" className="rounded-xl border border-slate-300 bg-white px-5 py-3 font-semibold text-slate-700 transition hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2b4764]">
+        Lihat layanan
+      </Link>
+    </nav>
+  </main>
+);
 
 export default Kontak;

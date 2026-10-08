@@ -1,81 +1,58 @@
+import { Link } from 'react-router-dom';
 import { HiOutlineHeart, HiOutlineLightBulb, HiOutlineUserGroup } from 'react-icons/hi';
-// Asumsikan Navbar sudah dipisah menjadi komponen tersendiri
-// import Navbar from '../components/Navbar';
 
-const Tentang = () => {
-  return (
-    <div className="min-h-screen font-sans bg-white selection:bg-blue-100">
-      {/* <Navbar /> */} {/* Buka komentar ini jika tidak menggunakan Layout di App.jsx */}
-      <main>
-        {/* HERO SECTION TENTANG */}
-        <section className="px-6 py-20 mx-auto max-w-7xl md:py-24 text-center">
-          <span className="inline-block px-4 py-1.5 mb-6 text-sm font-medium text-blue-600 bg-blue-50 rounded-full">Mengenal Kami Lebih Dekat</span>
-          <h1 className="text-4xl font-extrabold md:text-5xl text-slate-900 mb-6">Tentang Posyandu RW 08</h1>
-          <p className="max-w-2xl mx-auto text-lg leading-relaxed text-slate-600">
-            Kami adalah pusat pelayanan kesehatan masyarakat tingkat dasar yang berdedikasi untuk meningkatkan kesejahteraan ibu, anak, dan keluarga di lingkungan RW 08.
+const Tentang = () => (
+  <main className="min-h-screen px-6 pb-24">
+    <section className="mx-auto max-w-7xl py-16 text-center md:py-24">
+      <span className="mb-6 inline-block rounded-full bg-[#f1eee6] px-4 py-1.5 text-sm font-medium text-[#2b4764]">
+        Mengenal kami lebih dekat
+      </span>
+      <h1 className="mb-6 text-4xl font-extrabold text-slate-900 md:text-5xl">Tentang Posyandu RW 08</h1>
+      <p className="mx-auto max-w-3xl text-lg leading-relaxed text-slate-600">
+        Posyandu mendukung keluarga melalui kegiatan kesehatan berbasis masyarakat, pendampingan
+        kader, dan informasi layanan di lingkungan RW 08.
+      </p>
+    </section>
+
+    <section className="mx-auto grid max-w-7xl gap-6 md:grid-cols-2">
+      <article className="rounded-3xl border border-[#e8dcc2] bg-white/80 p-8 shadow-sm">
+        <span className="inline-flex rounded-2xl bg-[#f1eee6] p-3 text-[#2b4764]">
+          <HiOutlineLightBulb className="h-7 w-7" aria-hidden="true" />
+        </span>
+        <h2 className="mt-5 text-2xl font-bold text-slate-900">Tujuan</h2>
+        <p className="mt-3 leading-relaxed text-slate-600">
+          Mendekatkan informasi dan pendampingan kesehatan ibu, anak, serta keluarga kepada warga.
+          Pelayanan diberikan sesuai kegiatan dan tenaga yang tersedia.
+        </p>
+      </article>
+      <article className="rounded-3xl border border-[#e8dcc2] bg-white/80 p-8 shadow-sm">
+        <span className="inline-flex rounded-2xl bg-[#f1eee6] p-3 text-[#8a5a14]">
+          <HiOutlineHeart className="h-7 w-7" aria-hidden="true" />
+        </span>
+        <h2 className="mt-5 text-2xl font-bold text-slate-900">Pendampingan bersama</h2>
+        <p className="mt-3 leading-relaxed text-slate-600">
+          Kader membantu warga mendapatkan informasi kegiatan dan layanan. Untuk kebutuhan
+          pemeriksaan atau saran medis, warga dapat berkonsultasi dengan tenaga kesehatan.
+        </p>
+      </article>
+    </section>
+
+    <section className="mx-auto mt-12 max-w-7xl rounded-3xl bg-[#2b4764] p-8 text-white md:flex md:items-center md:justify-between md:gap-8 md:p-10">
+      <div className="flex items-start gap-4">
+        <HiOutlineUserGroup className="mt-1 h-7 w-7 shrink-0 text-amber-200" aria-hidden="true" />
+        <div>
+          <h2 className="text-2xl font-bold">Cari tahu kegiatan Posyandu</h2>
+          <p className="mt-2 leading-relaxed text-slate-200">
+            Jadwal dan lokasi kegiatan diumumkan setelah dicatat oleh petugas. Konfirmasikan
+            informasi kepada kader sebelum berkunjung.
           </p>
-        </section>
-
-        {/* VISI & MISI SECTION */}
-        <section className="px-6 py-16 mx-auto bg-slate-50 rounded-3xl max-w-7xl mb-24">
-          <div className="grid grid-cols-1 gap-12 md:grid-cols-2 md:px-12">
-            {/* Visi */}
-            <div className="space-y-4">
-              <div className="inline-flex p-3 text-blue-600 bg-blue-100 rounded-xl mb-2">
-                <HiOutlineLightBulb className="w-6 h-6" />
-              </div>
-              <h2 className="text-2xl font-bold text-slate-900">Visi Kami</h2>
-              <p className="leading-relaxed text-slate-600">Mewujudkan masyarakat RW 08 yang sehat, mandiri, dan peduli terhadap pertumbuhan dan perkembangan generasi penerus melalui pelayanan kesehatan yang optimal dan terpadu.</p>
-            </div>
-
-            {/* Misi */}
-            <div className="space-y-4">
-              <div className="inline-flex p-3 text-rose-600 bg-rose-100 rounded-xl mb-2">
-                <HiOutlineHeart className="w-6 h-6" />
-              </div>
-              <h2 className="text-2xl font-bold text-slate-900">Misi Kami</h2>
-              <ul className="space-y-3 text-slate-600">
-                <li className="flex items-start gap-3">
-                  <span className="w-1.5 h-1.5 mt-2 bg-blue-500 rounded-full flex-shrink-0"></span>
-                  Memberikan pelayanan kesehatan dasar yang mudah diakses.
-                </li>
-                <li className="flex items-start gap-3">
-                  <span className="w-1.5 h-1.5 mt-2 bg-blue-500 rounded-full flex-shrink-0"></span>
-                  Meningkatkan kesadaran masyarakat tentang pentingnya gizi dan imunisasi.
-                </li>
-                <li className="flex items-start gap-3">
-                  <span className="w-1.5 h-1.5 mt-2 bg-blue-500 rounded-full flex-shrink-0"></span>
-                  Memberdayakan kader-kader posyandu agar tanggap dan profesional.
-                </li>
-              </ul>
-            </div>
-          </div>
-        </section>
-
-        {/* PROFIL KADER SECTION */}
-        <section className="px-6 pb-24 mx-auto max-w-7xl">
-          <div className="mb-12 text-center">
-            <h2 className="text-3xl font-bold text-slate-900 mb-4">Pengurus & Kader</h2>
-            <p className="text-slate-600">Mengenal lebih dekat para penggerak Posyandu RW 08</p>
-          </div>
-
-          <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-4">
-            {/* Card Kader (Bisa di-map dari array data) */}
-            {[1, 2, 3, 4].map((item) => (
-              <div key={item} className="p-6 text-center transition-all bg-white border border-slate-100 rounded-2xl hover:shadow-lg hover:shadow-slate-100">
-                <div className="w-24 h-24 mx-auto mb-4 bg-slate-100 rounded-full flex items-center justify-center text-slate-400">
-                  <HiOutlineUserGroup className="w-10 h-10" />
-                </div>
-                <h3 className="text-lg font-bold text-slate-900">Nama Kader {item}</h3>
-                <p className="text-sm font-medium text-blue-600 mb-3">Jabatan</p>
-                <p className="text-sm text-slate-500">Berdedikasi dalam pelayanan kesehatan lingkungan.</p>
-              </div>
-            ))}
-          </div>
-        </section>
-      </main>
-    </div>
-  );
-};
+        </div>
+      </div>
+      <Link to="/informasi" className="mt-6 inline-flex shrink-0 rounded-xl bg-white px-5 py-3 font-semibold text-[#2b4764] transition hover:bg-[#f1eee6] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white md:mt-0">
+        Lihat jadwal
+      </Link>
+    </section>
+  </main>
+);
 
 export default Tentang;

@@ -18,12 +18,14 @@ import suplemenRoutes from "../modules/suplemen/suplemen.routes.js";
 import kehamilanRoutes from "../modules/kehamilan/kehamilan.routes.js";
 import pemeriksaanKehamilanRoutes from "../modules/pemeriksaan-kehamilan/pemeriksaan-kehamilan.routes.js";
 import pemeriksaanLansiaRoutes from "../modules/pemeriksaan-lansia/pemeriksaan-lansia.routes.js";
+import * as kegiatanController from "../modules/kegiatan/kegiatan.controller.js";
 
 const router = express.Router();
 
 // ---------- Publik ----------
 router.get("/health", (req, res) => res.json({ status: "ok" }));
 router.use("/auth", authRoutes);
+router.get("/informasi/kegiatan", kegiatanController.listPublic);
 
 // ---------- Khusus ADMIN ----------
 router.use("/users", authenticate, authorize("ADMIN"), usersRoutes);

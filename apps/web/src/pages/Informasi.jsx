@@ -1,131 +1,102 @@
-import { HiOutlineClock, HiOutlineLocationMarker, HiArrowRight } from 'react-icons/hi';
+import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { HiArrowRight, HiOutlineLocationMarker } from 'react-icons/hi';
+import api from '../services/api';
+
+const formatTanggal = (tanggal) => new Intl.DateTimeFormat('id-ID', {
+  day: 'numeric',
+  month: 'long',
+  year: 'numeric',
+}).format(new Date(`${tanggal.slice(0, 10)}T00:00:00`));
 
 const Informasi = () => {
-  // Data dummy jadwal kegiatan
-  const jadwalKegiatan = [
-    {
-      id: 1,
-      tanggal: '15',
-      bulan: 'Okt',
-      kegiatan: 'Posyandu Balita & Imunisasi',
-      waktu: '08:00 - 11:00 WIB',
-      lokasi: 'Balai Warga RW 08',
-      status: 'Akan Datang',
-    },
-    {
-      id: 2,
-      tanggal: '22',
-      bulan: 'Okt',
-      kegiatan: 'Kelas Ibu Hamil',
-      waktu: '09:00 - 10:30 WIB',
-      lokasi: 'Puskesmas Pembantu',
-      status: 'Akan Datang',
-    },
-  ];
+  const [jadwal, setJadwal] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
-  // Data dummy berita/pengumuman
-  const daftarBerita = [
-    {
-      id: 1,
-      kategori: 'Pengumuman',
-      tanggal: '10 Oktober 2026',
-      judul: 'Pemberian Vitamin A Gratis untuk Balita Bulan Ini',
-      deskripsi: 'Jangan lewatkan pemberian Vitamin A rutin bulan Oktober. Bawa buku KIA dan datangi posyandu sesuai jadwal yang telah ditentukan.',
-    },
-    {
-      id: 2,
-      kategori: 'Edukasi Kesehatan',
-      tanggal: '05 Oktober 2026',
-      judul: 'Pentingnya MPASI Bergizi untuk Cegah Stunting',
-      deskripsi: 'Pemberian Makanan Pendamping ASI (MPASI) yang tepat sangat penting saat bayi memasuki usia 6 bulan. Simak panduan lengkapnya di sini.',
-    },
-    {
-      id: 3,
-      kategori: 'Berita',
-      tanggal: '28 September 2026',
-      judul: 'Rekap Kegiatan Posyandu Bulan September',
-      deskripsi: 'Alhamdulillah, partisipasi warga RW 08 pada posyandu bulan lalu mencapai 95%. Terima kasih atas antusiasme ibu-ibu sekalian.',
-    },
-  ];
+  useEffect(() => {
+    let active = true;
+
+    api.get('/informasi/kegiatan')
+      .then(({ data }) => {
+        if (active) setJadwal(data.data);
+      })
+      .catch(() => {
+        if (active) setError('Jadwal belum dapat dimuat. Silakan coba lagi nanti atau hubungi kader Posyandu.');
+      })
+      .finally(() => {
+        if (active) setLoading(false);
+      });
+
+    return () => {
+      active = false;
+    };
+  }, []);
 
   return (
-    <div className="min-h-screen font-sans bg-white selection:bg-blue-100">
-      <main>
-        {/* HEADER SECTION */}
-        <section className="px-6 py-16 mx-auto max-w-7xl md:py-24">
-          <div className="max-w-3xl">
-            <span className="inline-block px-4 py-1.5 mb-6 text-sm font-medium text-blue-600 bg-blue-50 rounded-full">Pusat Informasi</span>
-            <h1 className="text-4xl font-extrabold md:text-5xl text-slate-900 mb-6">Berita & Jadwal Kegiatan Posyandu</h1>
-            <p className="text-lg leading-relaxed text-slate-600">Dapatkan informasi terbaru seputar jadwal layanan, pengumuman warga, dan artikel edukasi kesehatan langsung dari kader Posyandu RW 08.</p>
-          </div>
-        </section>
+    <main className="min-h-screen px-6 pb-24">
+      <section className="mx-auto max-w-7xl py-16 md:py-24">
+        <div className="max-w-3xl">
+          <span className="mb-6 inline-block rounded-full bg-[#f1eee6] px-4 py-1.5 text-sm font-medium text-[#2b4764]">
+            Pusat Informasi
+          </span>
+          <h1 className="mb-6 text-4xl font-extrabold text-slate-900 md:text-5xl">
+            Jadwal kegiatan Posyandu
+          </h1>
+          <p className="text-lg leading-relaxed text-slate-600">
+            Jadwal di halaman ini berasal dari kegiatan yang dicatat oleh petugas. Untuk perubahan atau
+            konfirmasi jadwal, silakan hubungi kader Posyandu RW 08.
+          </p>
+        </div>
+      </section>
 
-        {/* JADWAL KEGIATAN SECTION */}
-        <section className="px-6 py-16 mx-auto bg-slate-50 max-w-7xl rounded-3xl mb-24">
-          <div className="md:px-8">
-            <div className="flex items-center justify-between mb-8">
-              <h2 className="text-2xl font-bold text-slate-900">Jadwal Terdekat</h2>
-              <button className="text-sm font-medium text-blue-600 hover:text-blue-700">Lihat Semua Jadwal</button>
-            </div>
+      <section className="mx-auto max-w-7xl rounded-3xl border border-[#e8dcc2] bg-white/80 p-6 shadow-sm md:p-10" aria-labelledby="jadwal-title">
+        <div className="mb-8">
+          <p className="text-sm font-semibold uppercase tracking-wide text-[#8a5a14]">Informasi layanan</p>
+          <h2 id="jadwal-title" className="mt-2 text-2xl font-bold text-slate-900">Kegiatan mendatang</h2>
+        </div>
 
-            <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-              {jadwalKegiatan.map((jadwal) => (
-                <div key={jadwal.id} className="flex flex-col sm:flex-row items-start gap-6 p-6 bg-white border border-slate-100 rounded-2xl shadow-sm">
-                  {/* Tanggal Box */}
-                  <div className="flex flex-col items-center justify-center w-20 h-20 text-blue-600 bg-blue-50 rounded-xl flex-shrink-0">
-                    <span className="text-2xl font-black">{jadwal.tanggal}</span>
-                    <span className="text-sm font-medium uppercase">{jadwal.bulan}</span>
-                  </div>
+        {loading && <p role="status" className="text-slate-600">Memuat jadwal kegiatan...</p>}
+        {error && <p role="alert" className="rounded-xl border border-rose-200 bg-rose-50 p-4 text-rose-800">{error}</p>}
+        {!loading && !error && jadwal.length === 0 && (
+          <p className="rounded-2xl bg-[#f7f5ef] p-6 leading-relaxed text-slate-600">
+            Belum ada kegiatan mendatang yang diumumkan. Periksa kembali nanti atau hubungi kader untuk
+            memastikan jadwal layanan.
+          </p>
+        )}
 
-                  {/* Info Jadwal */}
-                  <div className="flex-1">
-                    <span className="inline-block px-2.5 py-1 mb-2 text-xs font-semibold text-emerald-700 bg-emerald-100 rounded-md">{jadwal.status}</span>
-                    <h3 className="text-xl font-bold text-slate-900 mb-3">{jadwal.kegiatan}</h3>
-                    <div className="space-y-2 text-sm text-slate-600">
-                      <div className="flex items-center gap-2">
-                        <HiOutlineClock className="w-4 h-4 text-slate-400" />
-                        <span>{jadwal.waktu}</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <HiOutlineLocationMarker className="w-4 h-4 text-slate-400" />
-                        <span>{jadwal.lokasi}</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* BERITA & PENGUMUMAN SECTION */}
-        <section className="px-6 pb-24 mx-auto max-w-7xl">
-          <div className="mb-12">
-            <h2 className="text-3xl font-bold text-slate-900 mb-4">Pengumuman & Edukasi</h2>
-            <p className="text-slate-600">Baca informasi dan tips kesehatan terbaru untuk keluarga Anda.</p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {daftarBerita.map((berita) => (
-              <div key={berita.id} className="group flex flex-col justify-between p-6 transition-all bg-white border border-slate-100 rounded-2xl hover:border-blue-100 hover:shadow-xl hover:shadow-blue-50">
-                <div>
-                  <div className="flex items-center gap-3 mb-4 text-sm">
-                    <span className="font-semibold text-blue-600">{berita.kategori}</span>
-                    <span className="w-1 h-1 bg-slate-300 rounded-full"></span>
-                    <span className="text-slate-500">{berita.tanggal}</span>
-                  </div>
-                  <h3 className="text-xl font-bold text-slate-900 mb-3 group-hover:text-blue-600 transition-colors">{berita.judul}</h3>
-                  <p className="leading-relaxed text-slate-600 mb-6 line-clamp-3">{berita.deskripsi}</p>
-                </div>
-                <button className="flex items-center gap-2 font-medium text-blue-600 w-fit hover:gap-3 transition-all">
-                  Baca Selengkapnya <HiArrowRight className="w-4 h-4" />
-                </button>
-              </div>
+        {!loading && !error && jadwal.length > 0 && (
+          <ul className="grid gap-4 md:grid-cols-2">
+            {jadwal.map((kegiatan) => (
+              <li key={kegiatan.id} className="rounded-2xl border border-slate-200 bg-white p-6">
+                <p className="text-sm font-semibold text-[#8a5a14]">{formatTanggal(kegiatan.tanggal)}</p>
+                <h3 className="mt-2 text-xl font-bold text-slate-900">{kegiatan.tema || 'Kegiatan Posyandu'}</h3>
+                {kegiatan.lokasi && (
+                  <p className="mt-3 flex items-center gap-2 text-sm text-slate-600">
+                    <HiOutlineLocationMarker className="h-5 w-5 text-[#2b4764]" aria-hidden="true" />
+                    {kegiatan.lokasi}
+                  </p>
+                )}
+              </li>
             ))}
-          </div>
-        </section>
-      </main>
-    </div>
+          </ul>
+        )}
+      </section>
+
+      <section className="mx-auto mt-12 max-w-7xl rounded-3xl bg-[#2b4764] p-8 text-white md:flex md:items-center md:justify-between md:gap-8 md:p-10">
+        <div>
+          <h2 className="text-2xl font-bold">Bersiap sebelum datang</h2>
+          <p className="mt-2 max-w-2xl leading-relaxed text-slate-200">
+            Bawa buku KIA atau KMS bila tersedia. Konfirmasikan waktu dan lokasi kegiatan kepada kader,
+            terutama jika ada perubahan jadwal.
+          </p>
+        </div>
+        <Link to="/kontak" className="mt-6 inline-flex shrink-0 items-center gap-2 rounded-xl bg-white px-5 py-3 font-semibold text-[#2b4764] transition hover:bg-[#f1eee6] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white md:mt-0">
+          Hubungi kader
+          <HiArrowRight className="h-5 w-5" aria-hidden="true" />
+        </Link>
+      </section>
+    </main>
   );
 };
 

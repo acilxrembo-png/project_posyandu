@@ -33,6 +33,8 @@
 
    Web biasanya tersedia di `http://localhost:5173`, API di `http://localhost:3000`, dan health check API di `http://localhost:3000/api/health`. Jika port web sedang dipakai, Vite otomatis memilih port berikutnya (misalnya `5174`). Proxy Vite meneruskan permintaan `/api` ke server API lokal.
 
+   Jadwal kegiatan mendatang ditampilkan di beranda dan halaman informasi dari `GET /api/informasi/kegiatan`. Endpoint publik ini hanya mengembalikan tanggal, tema, dan lokasi; tanggal dibandingkan menurut zona waktu `Asia/Jakarta`.
+
 Login contoh setelah seed:
 
 | Peran | Email | Kata sandi |
