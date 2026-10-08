@@ -1,5 +1,4 @@
 import { HiOutlineUserGroup, HiOutlineShieldCheck, HiOutlineClipboardList, HiOutlineChatAlt2, HiOutlineScale } from 'react-icons/hi';
-import { Link } from 'react-router-dom';
 
 const Layanan = () => {
   const daftarLayanan = [
@@ -55,9 +54,6 @@ const Layanan = () => {
       <main>
         {/* HEADER SECTION */}
         <section className="px-6 py-16 mx-auto max-w-7xl md:py-24 text-center">
-          <Link to="/" className="inline-flex mb-6 font-medium text-blue-600 hover:text-blue-700">
-            Kembali ke Beranda
-          </Link>
           <h1 className="text-4xl font-extrabold md:text-5xl text-slate-900 mb-6">Layanan Kesehatan Kami</h1>
           <p className="max-w-2xl mx-auto text-lg leading-relaxed text-slate-600">
             Kami menyediakan berbagai program kesehatan dasar yang terpadu untuk memastikan setiap keluarga di RW 08 mendapatkan pemantauan dan perawatan yang optimal.

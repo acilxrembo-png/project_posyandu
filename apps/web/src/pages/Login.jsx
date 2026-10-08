@@ -1,9 +1,8 @@
 import { useState } from 'react'; // <-- Tambahkan useState di sini
 // --- MULAI DARI SINI: Tambahkan import lainnya yang dibutuhkan ---
 import { useNavigate, useLocation, Link } from 'react-router-dom';
-import { HiOutlineMail, HiOutlineLockClosed, HiOutlineEye, HiOutlineEyeOff, HiOutlineShieldCheck, HiOutlineArrowRight } from 'react-icons/hi';
+import { HiOutlineMail, HiOutlineLockClosed, HiOutlineEye, HiOutlineEyeOff } from 'react-icons/hi';
 import { useAuth } from '../context/AuthContext';
-import Logo from '../assets/Logo.svg';
 // --- BATAS IMPORT ---
 
 const Login = () => {
@@ -51,7 +50,7 @@ const Login = () => {
       <div className="sm:mx-auto sm:w-full sm:max-w-md text-center mb-8">
         <div className="flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-4">
           <img
-            src={Logo}
+            src="/Logo.svg"
             alt="Logo Posyandu"
             className="w-24 h-24 object-contain"
             onError={(e) => {

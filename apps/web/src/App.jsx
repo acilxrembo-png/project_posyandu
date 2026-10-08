@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 
 // Import Context & Pelindung Halaman
 import { AuthProvider } from './context/AuthContext';
@@ -16,12 +16,9 @@ import Kontak from './pages/Kontak';
 import Register from './pages/Register';
 
 const AppContent = () => {
-  const location = useLocation();
-  const hideNavbar = ['/tentang', '/layanan'].includes(location.pathname);
-
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col">
-      {!hideNavbar && <Navbar />}
+      <Navbar />
       <div className="flex-grow">
         <Routes>
           <Route path="/" element={<Beranda />} />

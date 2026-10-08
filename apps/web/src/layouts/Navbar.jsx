@@ -1,14 +1,25 @@
 import { useState } from 'react';
 import { NavLink } from 'react-router-dom';
-import { HiMenu, HiX, HiOutlineHome, HiOutlineUser, HiOutlineInformationCircle, HiOutlinePhotograph, HiOutlinePhone } from 'react-icons/hi';
+import {
+  HiMenu,
+  HiX,
+  HiOutlineHome,
+  HiOutlineUser,
+  HiOutlineInformationCircle,
+  HiOutlinePhotograph,
+  HiOutlinePhone,
+  HiOutlineClipboardList,
+  HiOutlineUserGroup,
+} from 'react-icons/hi';
 import { useAuth } from '../context/AuthContext';
-import Logo from '../assets/Logo.svg';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const { isAuthenticated, logout } = useAuth();
   const menuItems = [
     { label: 'Beranda', href: '/', icon: <HiOutlineHome /> },
+    { label: 'Layanan', href: '/layanan', icon: <HiOutlineClipboardList /> },
+    { label: 'Tentang', href: '/tentang', icon: <HiOutlineUserGroup /> },
     { label: 'Informasi', href: '/informasi', icon: <HiOutlineInformationCircle /> },
     { label: 'Galeri', href: '/galeri', icon: <HiOutlinePhotograph /> },
     { label: 'Kontak', href: '/kontak', icon: <HiOutlinePhone /> },
@@ -18,7 +29,7 @@ const Navbar = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           <div className="flex items-center gap-3">
-            <img src={Logo} alt="Logo Posyandu RW 08" className="h-10 w-10 object-contain" />
+            <img src="/Logo.svg" alt="Logo Posyandu RW 08" className="h-10 w-10 object-contain" />
             <span className="font-bold text-xl">Posyandu RW 08</span>
           </div>
 

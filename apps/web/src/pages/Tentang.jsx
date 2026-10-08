@@ -1,5 +1,4 @@
 import { HiOutlineHeart, HiOutlineLightBulb, HiOutlineUserGroup } from 'react-icons/hi';
-import { Link } from 'react-router-dom';
 // Asumsikan Navbar sudah dipisah menjadi komponen tersendiri
 // import Navbar from '../components/Navbar';
 
@@ -10,9 +9,6 @@ const Tentang = () => {
       <main>
         {/* HERO SECTION TENTANG */}
         <section className="px-6 py-20 mx-auto max-w-7xl md:py-24 text-center">
-          <Link to="/" className="inline-flex mb-6 font-medium text-blue-600 hover:text-blue-700">
-            Kembali ke Beranda
-          </Link>
           <span className="inline-block px-4 py-1.5 mb-6 text-sm font-medium text-blue-600 bg-blue-50 rounded-full">Mengenal Kami Lebih Dekat</span>
           <h1 className="text-4xl font-extrabold md:text-5xl text-slate-900 mb-6">Tentang Posyandu RW 08</h1>
           <p className="max-w-2xl mx-auto text-lg leading-relaxed text-slate-600">
