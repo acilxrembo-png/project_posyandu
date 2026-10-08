@@ -21,8 +21,11 @@ ENV NODE_ENV=production
 ENV PORT=3000
 COPY --from=build /app/node_modules ./node_modules
 COPY --from=build /app/apps/api ./apps/api
+COPY --from=build /app/apps/api/node_modules ./apps/api/node_modules
 COPY --from=build /app/packages/database ./packages/database
+COPY --from=build /app/packages/database/node_modules ./packages/database/node_modules
 COPY --from=build /app/package.json ./package.json
 COPY --from=build /app/pnpm-workspace.yaml ./pnpm-workspace.yaml
+USER node
 EXPOSE 3000
 CMD ["node", "apps/api/src/server.js"]

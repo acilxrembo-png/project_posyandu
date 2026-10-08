@@ -3,10 +3,16 @@ import "dotenv/config";
 
 const nodeEnv = process.env.NODE_ENV || "development";
 const configuredCorsOrigins = process.env.CORS_ORIGIN;
+const port = process.env.PORT === undefined ? 3000 : Number(process.env.PORT);
+
+if (!Number.isInteger(port) || port < 1 || port > 65535) {
+  console.error("PORT harus berupa angka antara 1 dan 65535.");
+  process.exit(1);
+}
 
 const env = {
   nodeEnv,
-  port: process.env.PORT || 3000,
+  port,
   jwtSecret: process.env.JWT_SECRET,
   jwtExpiresIn: process.env.JWT_EXPIRES_IN || "7d",
   corsOrigins: (configuredCorsOrigins || "http://localhost:5173,http://127.0.0.1:5173")
