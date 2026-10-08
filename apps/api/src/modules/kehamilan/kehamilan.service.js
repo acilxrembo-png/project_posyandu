@@ -13,11 +13,31 @@ const ORDER_BY = { createdAt: "desc" };
 const INCLUDE = { ibu: { select: { id: true, nama: true, nik: true } } };
 const HARI = 24 * 60 * 60 * 1000;
 
+function scopeWhere(user) {
+  if (user.role !== "KADER") return {};
+  if (!user.posyanduId) {
+    throw httpError(403, "Akun kader belum terhubung ke posyandu");
+  }
+  return { ibu: { posyanduId: user.posyanduId } };
+}
+
+async function validateIbu(ibuId, user) {
+  if (user.role !== "KADER") return;
+  if (!user.posyanduId) {
+    throw httpError(403, "Akun kader belum terhubung ke posyandu");
+  }
+  const ibu = await prisma.warga.findFirst({
+    where: { id: ibuId, posyanduId: user.posyanduId, jenisKelamin: "PEREMPUAN" },
+    select: { id: true },
+  });
+  if (!ibu) throw httpError(404, "Data ibu tidak ditemukan");
+}
+
 // GET /  -> daftar data (pagination, filter, search)
-async function list(query) {
+async function list(query, user) {
   const { page, limit, skip } = parsePagination(query);
 
-  const where = {};
+  const where = { ...scopeWhere(user) };
 
   for (const field of FILTERS) {
     if (query[field]) where[field] = String(query[field]);
@@ -36,9 +56,9 @@ async function list(query) {
 }
 
 // GET /:id  -> detail satu data
-async function getById(id) {
-  const item = await prisma.kehamilan.findUnique({
-    where: { id },
+async function getById(id, user) {
+  const item = await prisma.kehamilan.findFirst({
+    where: { id, ...scopeWhere(user) },
     include: INCLUDE,
   });
   if (!item) throw httpError(404, "Data tidak ditemukan");
@@ -46,8 +66,9 @@ async function getById(id) {
 }
 
 // POST /  -> tambah data baru
-async function create(body) {
+async function create(body, user) {
   const data = cleanBody(body, DATE_FIELDS);
+  await validateIbu(data.ibuId, user);
 
   // Jika HPL kosong, hitung otomatis dari HPHT (+280 hari, rumus Naegele)
   if (data.hpht && !data.hpl) {
@@ -58,15 +79,26 @@ async function create(body) {
 }
 
 // PATCH/PUT /:id  -> ubah data
-async function update(id, body) {
+async function update(id, body, user) {
   const data = cleanBody(body, DATE_FIELDS);
+  const existing = await prisma.kehamilan.findFirst({
+    where: { id, ...scopeWhere(user) },
+    select: { id: true },
+  });
+  if (!existing) throw httpError(404, "Data tidak ditemukan");
+  if (data.ibuId) await validateIbu(data.ibuId, user);
 
   // Error P2025 (data tidak ada) otomatis menjadi 404 di error middleware
   return prisma.kehamilan.update({ where: { id }, data, include: INCLUDE });
 }
 
 // DELETE /:id  -> hapus data
-async function remove(id) {
+async function remove(id, user) {
+  const existing = await prisma.kehamilan.findFirst({
+    where: { id, ...scopeWhere(user) },
+    select: { id: true },
+  });
+  if (!existing) throw httpError(404, "Data tidak ditemukan");
   await prisma.kehamilan.delete({ where: { id } });
 }
 

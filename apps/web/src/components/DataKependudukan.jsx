@@ -92,6 +92,28 @@ const MASTER_DATA = {
       { key: 'catatan', label: 'Catatan', type: 'textarea' },
     ],
   },
+  kehamilan: {
+    title: 'Kehamilan',
+    endpoint: '/kehamilan',
+    columns: [
+      { key: 'ibu', label: 'Nama ibu', format: (value) => value?.nama || '—' },
+      { key: 'hpht', label: 'HPHT', format: dateLabel },
+      { key: 'hpl', label: 'HPL', format: dateLabel },
+      { key: 'status', label: 'Status', format: enumLabel },
+    ],
+    fields: [
+      { key: 'ibuId', label: 'Ibu', type: 'warga', femaleOnly: true, required: true },
+      { key: 'hpht', label: 'Hari pertama haid terakhir (HPHT)', type: 'date', required: true },
+      { key: 'hpl', label: 'Hari perkiraan lahir (HPL)', type: 'date', optional: true },
+      { key: 'gravida', label: 'Jumlah kehamilan', type: 'number', min: 1, step: 1 },
+      { key: 'paritas', label: 'Jumlah persalinan', type: 'number', min: 0, step: 1 },
+      { key: 'abortus', label: 'Jumlah keguguran', type: 'number', min: 0, step: 1 },
+      { key: 'status', label: 'Status kehamilan', type: 'select', required: true, options: [['AKTIF', 'Aktif'], ['MELAHIRKAN', 'Melahirkan'], ['KEGUGURAN', 'Keguguran']] },
+      { key: 'tanggalAkhir', label: 'Tanggal akhir kehamilan (opsional)', type: 'date', optional: true },
+      { key: 'penolongPersalinan', label: 'Penolong persalinan', optional: true },
+      { key: 'tempatPersalinan', label: 'Tempat persalinan', optional: true },
+    ],
+  },
 };
 
 function dateLabel(value) {
@@ -157,6 +179,7 @@ export default function DataKependudukan({ role }) {
       const requests = [];
       if (resourceKey === 'warga') requests.push(api.get('/keluarga?limit=100'));
       if (resourceKey === 'balita') requests.push(api.get('/warga?limit=100'));
+      if (resourceKey === 'kehamilan') requests.push(api.get('/warga?limit=100'));
       if (resourceKey === 'penimbangan') {
         requests.push(api.get('/balita?limit=100'));
         requests.push(api.get('/kegiatan?limit=100'));
@@ -169,6 +192,10 @@ export default function DataKependudukan({ role }) {
         responseIndex += 1;
       }
       if (resourceKey === 'balita') {
+        setResidents(responses[responseIndex].data.data);
+        responseIndex += 1;
+      }
+      if (resourceKey === 'kehamilan') {
         setResidents(responses[responseIndex].data.data);
         responseIndex += 1;
       }
@@ -190,6 +217,7 @@ export default function DataKependudukan({ role }) {
     const requests = [];
     if (resourceKey === 'warga') requests.push(api.get('/keluarga?limit=100'));
     if (resourceKey === 'balita') requests.push(api.get('/warga?limit=100'));
+    if (resourceKey === 'kehamilan') requests.push(api.get('/warga?limit=100'));
     if (resourceKey === 'penimbangan') {
       requests.push(api.get('/balita?limit=100'));
       requests.push(api.get('/kegiatan?limit=100'));
@@ -205,6 +233,10 @@ export default function DataKependudukan({ role }) {
           responseIndex += 1;
         }
         if (resourceKey === 'balita') {
+          setResidents(responses[responseIndex].data.data);
+          responseIndex += 1;
+        }
+        if (resourceKey === 'kehamilan') {
           setResidents(responses[responseIndex].data.data);
           responseIndex += 1;
         }
@@ -292,7 +324,7 @@ export default function DataKependudukan({ role }) {
     const nextForm = createEmptyForm(resource.fields);
     for (const field of resource.fields) {
       const value = record[field.key];
-      if (field.key === 'tanggalLahir' && value) nextForm[field.key] = String(value).slice(0, 10);
+      if (field.type === 'date' && value) nextForm[field.key] = String(value).slice(0, 10);
       else if (field.key === 'wargaId') nextForm[field.key] = record.warga?.id || '';
       else if (field.key === 'ibuId') nextForm[field.key] = record.ibu?.id || '';
       else if (field.key === 'balitaId') nextForm[field.key] = record.balitaId || record.balita?.id || '';
@@ -399,7 +431,7 @@ export default function DataKependudukan({ role }) {
     <section className="mt-8 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-7" aria-labelledby="data-kependudukan-title">
       <div className="mb-5">
         <h2 id="data-kependudukan-title" className="text-lg font-semibold text-slate-900">Data layanan</h2>
-        <p className="mt-1 text-sm text-slate-600">Kelola data warga, keluarga, profil balita, dan hasil penimbangan sesuai Posyandu.</p>
+        <p className="mt-1 text-sm text-slate-600">Kelola data warga, keluarga, profil balita, kehamilan, dan hasil penimbangan sesuai Posyandu.</p>
       </div>
 
       <div className="mb-5 flex flex-wrap gap-2" role="tablist" aria-label="Jenis data">
