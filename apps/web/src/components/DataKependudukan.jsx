@@ -114,6 +114,104 @@ const MASTER_DATA = {
       { key: 'tempatPersalinan', label: 'Tempat persalinan', optional: true },
     ],
   },
+  imunisasi: {
+    title: 'Imunisasi balita',
+    endpoint: '/imunisasi',
+    columns: [
+      { key: 'balita', label: 'Nama balita', format: (value) => value?.warga?.nama || '—' },
+      { key: 'vaksin', label: 'Vaksin', format: (value) => value?.nama || '—' },
+      { key: 'tanggal', label: 'Tanggal', format: dateLabel },
+      { key: 'dosisKe', label: 'Dosis ke' },
+      { key: 'batchNo', label: 'Nomor batch', format: (value) => value || '—' },
+    ],
+    fields: [
+      { key: 'balitaId', label: 'Balita', type: 'balita', required: true },
+      { key: 'vaksinId', label: 'Vaksin', type: 'vaccine', required: true },
+      { key: 'tanggal', label: 'Tanggal imunisasi', type: 'date', required: true },
+      { key: 'dosisKe', label: 'Dosis ke', type: 'number', min: 1, step: 1, required: true, defaultValue: 1 },
+      { key: 'kegiatanId', label: 'Kegiatan (opsional)', type: 'activity', optional: true },
+      { key: 'batchNo', label: 'Nomor batch', optional: true },
+      { key: 'catatan', label: 'Catatan', type: 'textarea', optional: true },
+    ],
+  },
+  suplemen: {
+    title: 'Pemberian suplemen',
+    endpoint: '/suplemen',
+    columns: [
+      { key: 'balita', label: 'Nama balita', format: (value) => value?.warga?.nama || '—' },
+      { key: 'jenis', label: 'Jenis suplemen', format: (value) => value === 'PMT' ? 'PMT' : enumLabel(value) },
+      { key: 'tanggal', label: 'Tanggal', format: dateLabel },
+      { key: 'jumlah', label: 'Jumlah', format: (value) => value ?? '—' },
+      { key: 'kegiatan', label: 'Kegiatan', format: (value) => value?.tanggal ? dateLabel(value.tanggal) : '—' },
+    ],
+    fields: [
+      { key: 'balitaId', label: 'Balita', type: 'balita', required: true },
+      { key: 'jenis', label: 'Jenis suplemen', type: 'select', required: true, options: [['VITAMIN_A_BIRU', 'Vitamin A biru'], ['VITAMIN_A_MERAH', 'Vitamin A merah'], ['OBAT_CACING', 'Obat cacing'], ['PMT', 'Pemberian makanan tambahan'], ['TABLET_TAMBAH_DARAH', 'Tablet tambah darah']] },
+      { key: 'tanggal', label: 'Tanggal pemberian', type: 'date', required: true },
+      { key: 'jumlah', label: 'Jumlah', type: 'number', min: 1, step: 1, optional: true },
+      { key: 'kegiatanId', label: 'Kegiatan (opsional)', type: 'activity', optional: true },
+      { key: 'catatan', label: 'Catatan', type: 'textarea', optional: true },
+    ],
+  },
+  pemeriksaanKehamilan: {
+    title: 'Pemeriksaan kehamilan',
+    endpoint: '/pemeriksaan-kehamilan',
+    columns: [
+      { key: 'kehamilan', label: 'Ibu', format: (value) => value?.ibu?.nama || '—' },
+      { key: 'tanggal', label: 'Tanggal', format: dateLabel },
+      { key: 'usiaKehamilanMinggu', label: 'Usia (minggu)', format: (value) => value ?? '—' },
+      { key: 'lila', label: 'LiLA (cm)', format: (value) => value ?? '—' },
+      { key: 'risikoTinggi', label: 'Risiko tinggi', format: (value) => value ? 'Ya' : 'Tidak' },
+      { key: 'dirujuk', label: 'Dirujuk', format: (value) => value ? 'Ya' : 'Tidak' },
+    ],
+    fields: [
+      { key: 'kehamilanId', label: 'Ibu hamil aktif', type: 'pregnancy', required: true },
+      { key: 'tanggal', label: 'Tanggal pemeriksaan', type: 'date', required: true },
+      { key: 'usiaKehamilanMinggu', label: 'Usia kehamilan (minggu)', type: 'number', min: 0, step: 1, optional: true },
+      { key: 'berat', label: 'Berat badan (kg)', type: 'number', min: 0, step: 0.01, optional: true },
+      { key: 'tinggi', label: 'Tinggi badan (cm)', type: 'number', min: 0, step: 0.1, optional: true },
+      { key: 'lila', label: 'LiLA (cm)', type: 'number', min: 0, step: 0.1, optional: true },
+      { key: 'sistol', label: 'Tekanan darah sistolik', type: 'number', min: 0, step: 1, optional: true },
+      { key: 'diastol', label: 'Tekanan darah diastolik', type: 'number', min: 0, step: 1, optional: true },
+      { key: 'tinggiFundus', label: 'Tinggi fundus (cm)', type: 'number', min: 0, step: 0.1, optional: true },
+      { key: 'hemoglobin', label: 'Hemoglobin (g/dL)', type: 'number', min: 0, step: 0.1, optional: true },
+      { key: 'jumlahTabletFe', label: 'Jumlah tablet Fe', type: 'number', min: 0, step: 1, optional: true },
+      { key: 'imunisasiTT', label: 'Imunisasi TT', type: 'checkbox' },
+      { key: 'risikoTinggi', label: 'Risiko tinggi', type: 'checkbox' },
+      { key: 'dirujuk', label: 'Dirujuk', type: 'checkbox' },
+      { key: 'kegiatanId', label: 'Kegiatan (opsional)', type: 'activity', optional: true },
+      { key: 'keluhan', label: 'Keluhan', type: 'textarea', optional: true },
+      { key: 'catatan', label: 'Catatan', type: 'textarea', optional: true },
+    ],
+  },
+  lansia: {
+    title: 'Pemeriksaan lansia',
+    endpoint: '/pemeriksaan-lansia',
+    columns: [
+      { key: 'warga', label: 'Nama lansia', format: (value) => value?.nama || '—' },
+      { key: 'tanggal', label: 'Tanggal', format: dateLabel },
+      { key: 'sistol', label: 'Sistolik', format: (value) => value ?? '—' },
+      { key: 'diastol', label: 'Diastolik', format: (value) => value ?? '—' },
+      { key: 'gulaDarah', label: 'Gula darah', format: (value) => value ?? '—' },
+      { key: 'dirujuk', label: 'Dirujuk', format: (value) => value ? 'Ya' : 'Tidak' },
+    ],
+    fields: [
+      { key: 'wargaId', label: 'Warga lansia', type: 'warga', olderOnly: true, required: true },
+      { key: 'tanggal', label: 'Tanggal pemeriksaan', type: 'date', required: true },
+      { key: 'berat', label: 'Berat badan (kg)', type: 'number', min: 0, step: 0.01, optional: true },
+      { key: 'tinggi', label: 'Tinggi badan (cm)', type: 'number', min: 0, step: 0.1, optional: true },
+      { key: 'lingkarPerut', label: 'Lingkar perut (cm)', type: 'number', min: 0, step: 0.1, optional: true },
+      { key: 'sistol', label: 'Tekanan darah sistolik', type: 'number', min: 0, step: 1, optional: true },
+      { key: 'diastol', label: 'Tekanan darah diastolik', type: 'number', min: 0, step: 1, optional: true },
+      { key: 'gulaDarah', label: 'Gula darah (mg/dL)', type: 'number', min: 0, step: 0.1, optional: true },
+      { key: 'kolesterol', label: 'Kolesterol (mg/dL)', type: 'number', min: 0, step: 0.1, optional: true },
+      { key: 'asamUrat', label: 'Asam urat (mg/dL)', type: 'number', min: 0, step: 0.1, optional: true },
+      { key: 'dirujuk', label: 'Dirujuk', type: 'checkbox' },
+      { key: 'kegiatanId', label: 'Kegiatan (opsional)', type: 'activity', optional: true },
+      { key: 'keluhan', label: 'Keluhan', type: 'textarea', optional: true },
+      { key: 'catatan', label: 'Catatan', type: 'textarea', optional: true },
+    ],
+  },
 };
 
 function dateLabel(value) {
@@ -124,6 +222,17 @@ function dateLabel(value) {
 
 function enumLabel(value) {
   return value ? value.replaceAll('_', ' ').toLowerCase().replace(/\b\p{L}/gu, (letter) => letter.toUpperCase()) : '—';
+}
+
+function isSenior(resident) {
+  if (!resident.tanggalLahir) return false;
+  const birthDate = new Date(`${String(resident.tanggalLahir).slice(0, 10)}T00:00:00`);
+  const today = new Date();
+  let age = today.getFullYear() - birthDate.getFullYear();
+  const beforeBirthday = today.getMonth() < birthDate.getMonth()
+    || (today.getMonth() === birthDate.getMonth() && today.getDate() < birthDate.getDate());
+  if (beforeBirthday) age -= 1;
+  return age >= 60;
 }
 
 function errorMessage(error, fallback) {
@@ -150,6 +259,8 @@ export default function DataKependudukan({ role }) {
   const [residents, setResidents] = useState([]);
   const [balitaProfiles, setBalitaProfiles] = useState([]);
   const [activities, setActivities] = useState([]);
+  const [vaccines, setVaccines] = useState([]);
+  const [pregnancies, setPregnancies] = useState([]);
   const [locations, setLocations] = useState([]);
   const [form, setForm] = useState(() => createEmptyForm(MASTER_DATA.warga.fields));
   const [editingId, setEditingId] = useState(null);
@@ -184,6 +295,19 @@ export default function DataKependudukan({ role }) {
         requests.push(api.get('/balita?limit=100'));
         requests.push(api.get('/kegiatan?limit=100'));
       }
+      if (['imunisasi', 'suplemen'].includes(resourceKey)) {
+        requests.push(api.get('/balita?limit=100'));
+        if (resourceKey === 'imunisasi') requests.push(api.get('/vaksin?limit=100'));
+        requests.push(api.get('/kegiatan?limit=100'));
+      }
+      if (resourceKey === 'pemeriksaanKehamilan') {
+        requests.push(api.get('/kehamilan?status=AKTIF&limit=100'));
+        requests.push(api.get('/kegiatan?limit=100'));
+      }
+      if (resourceKey === 'lansia') {
+        requests.push(api.get('/warga?limit=100'));
+        requests.push(api.get('/kegiatan?limit=100'));
+      }
       if (isAdmin && ['warga', 'keluarga'].includes(resourceKey)) requests.push(api.get('/posyandu?limit=100'));
       const responses = await Promise.all(requests);
       let responseIndex = 0;
@@ -204,6 +328,26 @@ export default function DataKependudukan({ role }) {
         setActivities(responses[responseIndex + 1].data.data);
         responseIndex += 2;
       }
+      if (['imunisasi', 'suplemen'].includes(resourceKey)) {
+        setBalitaProfiles(responses[responseIndex].data.data);
+        responseIndex += 1;
+        if (resourceKey === 'imunisasi') {
+          setVaccines(responses[responseIndex].data.data);
+          responseIndex += 1;
+        }
+        setActivities(responses[responseIndex].data.data);
+        responseIndex += 1;
+      }
+      if (resourceKey === 'pemeriksaanKehamilan') {
+        setPregnancies(responses[responseIndex].data.data);
+        setActivities(responses[responseIndex + 1].data.data);
+        responseIndex += 2;
+      }
+      if (resourceKey === 'lansia') {
+        setResidents(responses[responseIndex].data.data);
+        setActivities(responses[responseIndex + 1].data.data);
+        responseIndex += 2;
+      }
       if (isAdmin && ['warga', 'keluarga'].includes(resourceKey)) {
         setLocations(responses[responseIndex].data.data.filter((location) => location.aktif));
       }
@@ -220,6 +364,19 @@ export default function DataKependudukan({ role }) {
     if (resourceKey === 'kehamilan') requests.push(api.get('/warga?limit=100'));
     if (resourceKey === 'penimbangan') {
       requests.push(api.get('/balita?limit=100'));
+      requests.push(api.get('/kegiatan?limit=100'));
+    }
+    if (['imunisasi', 'suplemen'].includes(resourceKey)) {
+      requests.push(api.get('/balita?limit=100'));
+      if (resourceKey === 'imunisasi') requests.push(api.get('/vaksin?limit=100'));
+      requests.push(api.get('/kegiatan?limit=100'));
+    }
+    if (resourceKey === 'pemeriksaanKehamilan') {
+      requests.push(api.get('/kehamilan?status=AKTIF&limit=100'));
+      requests.push(api.get('/kegiatan?limit=100'));
+    }
+    if (resourceKey === 'lansia') {
+      requests.push(api.get('/warga?limit=100'));
       requests.push(api.get('/kegiatan?limit=100'));
     }
     if (isAdmin && ['warga', 'keluarga'].includes(resourceKey)) requests.push(api.get('/posyandu?limit=100'));
@@ -242,6 +399,26 @@ export default function DataKependudukan({ role }) {
         }
         if (resourceKey === 'penimbangan') {
           setBalitaProfiles(responses[responseIndex].data.data);
+          setActivities(responses[responseIndex + 1].data.data);
+          responseIndex += 2;
+        }
+        if (['imunisasi', 'suplemen'].includes(resourceKey)) {
+          setBalitaProfiles(responses[responseIndex].data.data);
+          responseIndex += 1;
+          if (resourceKey === 'imunisasi') {
+            setVaccines(responses[responseIndex].data.data);
+            responseIndex += 1;
+          }
+          setActivities(responses[responseIndex].data.data);
+          responseIndex += 1;
+        }
+        if (resourceKey === 'pemeriksaanKehamilan') {
+          setPregnancies(responses[responseIndex].data.data);
+          setActivities(responses[responseIndex + 1].data.data);
+          responseIndex += 2;
+        }
+        if (resourceKey === 'lansia') {
+          setResidents(responses[responseIndex].data.data);
           setActivities(responses[responseIndex + 1].data.data);
           responseIndex += 2;
         }
@@ -325,6 +502,7 @@ export default function DataKependudukan({ role }) {
     for (const field of resource.fields) {
       const value = record[field.key];
       if (field.type === 'date' && value) nextForm[field.key] = String(value).slice(0, 10);
+      else if (field.type === 'checkbox') nextForm[field.key] = Boolean(value);
       else if (field.key === 'wargaId') nextForm[field.key] = record.warga?.id || '';
       else if (field.key === 'ibuId') nextForm[field.key] = record.ibu?.id || '';
       else if (field.key === 'balitaId') nextForm[field.key] = record.balitaId || record.balita?.id || '';
@@ -397,17 +575,21 @@ export default function DataKependudukan({ role }) {
         </select>
       );
     }
-    if (field.type === 'posyandu' || field.type === 'family' || field.type === 'warga' || field.type === 'balita' || field.type === 'activity') {
+    if (field.type === 'posyandu' || field.type === 'family' || field.type === 'warga' || field.type === 'balita' || field.type === 'activity' || field.type === 'vaccine' || field.type === 'pregnancy') {
       const options = field.type === 'posyandu'
         ? locations.map((item) => [item.id, item.nama])
         : field.type === 'family'
           ? families.map((item) => [item.id, `${item.nomorKk} — ${item.kepalaKeluarga}`])
           : field.type === 'activity'
             ? activities.map((item) => [item.id, `${dateLabel(item.tanggal)} — ${item.tema || 'Kegiatan Posyandu'}`])
+            : field.type === 'vaccine'
+              ? vaccines.map((item) => [item.id, `${item.nama} (${item.kode})`])
+              : field.type === 'pregnancy'
+                ? pregnancies.map((item) => [item.id, `${item.ibu?.nama || 'Ibu'} — HPL ${dateLabel(item.hpl)}`])
             : field.type === 'balita'
               ? balitaProfiles.map((item) => [item.id, item.warga?.nama || 'Balita'])
               : residents
-                .filter((item) => !field.femaleOnly || item.jenisKelamin === 'PEREMPUAN')
+                .filter((item) => (!field.femaleOnly || item.jenisKelamin === 'PEREMPUAN') && (!field.olderOnly || isSenior(item)))
                 .map((item) => [item.id, `${item.nama}${item.nik ? ` — ${item.nik}` : ''}`]);
       return (
         <select {...common}>
@@ -431,7 +613,7 @@ export default function DataKependudukan({ role }) {
     <section className="mt-8 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-7" aria-labelledby="data-kependudukan-title">
       <div className="mb-5">
         <h2 id="data-kependudukan-title" className="text-lg font-semibold text-slate-900">Data layanan</h2>
-        <p className="mt-1 text-sm text-slate-600">Kelola data warga, keluarga, profil balita, kehamilan, dan hasil penimbangan sesuai Posyandu.</p>
+        <p className="mt-1 text-sm text-slate-600">Kelola data warga dan layanan Posyandu sesuai wilayah akses Anda.</p>
       </div>
 
       <div className="mb-5 flex flex-wrap gap-2" role="tablist" aria-label="Jenis data">
