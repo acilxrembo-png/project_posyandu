@@ -20,11 +20,19 @@ import pemeriksaanKehamilanRoutes from "../modules/pemeriksaan-kehamilan/pemerik
 import pemeriksaanLansiaRoutes from "../modules/pemeriksaan-lansia/pemeriksaan-lansia.routes.js";
 import * as kegiatanController from "../modules/kegiatan/kegiatan.controller.js";
 import * as portalController from "../modules/portal/portal.controller.js";
+import prisma from "../lib/prisma.js";
 
 const router = express.Router();
 
 // ---------- Publik ----------
-router.get("/health", (req, res) => res.json({ status: "ok" }));
+router.get("/health", async (req, res, next) => {
+  try {
+    await prisma.$queryRaw`SELECT 1`;
+    res.json({ status: "ok" });
+  } catch (error) {
+    next(error);
+  }
+});
 router.use("/auth", authRoutes);
 router.get("/informasi/kegiatan", kegiatanController.listPublic);
 
