@@ -11,9 +11,9 @@
   "license": "ISC",
   "packageManager": "pnpm@10.33.4",
   "dependencies": {
-    "@prisma/client": "^7.10.0"
+    "@prisma/client": "^6.19.3"
   },
   "devDependencies": {
-    "prisma": "8.0.0-rc.17"
+    "prisma": "^6.19.3"
   }
 }
