@@ -1,39 +1,40 @@
 # Dependencies
 node_modules/
-
-# pnpm
 .pnpm-store/
 
-# Environment
+# Environment variables (file .env.example tetap di-commit)
 .env
 .env.*
 !.env.example
 
-# Build
+# Build output
 dist/
 build/
-.next/
-.nuxt/
-.output/
+coverage/
+.vite/
 
 # Logs
-*.log
 logs/
+*.log
+npm-debug.log*
+pnpm-debug.log*
 
-# Database
+# Prisma
 *.db
 *.db-journal
 
-# OS
-.DS_Store
-Thumbs.db
-
-# IDE
-.idea/
+# Editor & OS
 .vscode/*
 !.vscode/extensions.json
 !.vscode/settings.json
+.idea/
+.DS_Store
+Thumbs.db
+desktop.ini
 
-# Temporary
-.tmp/
-.temp/
+# Cache & temporary
+.cache/
+.eslintcache
+*.tsbuildinfo
+tmp/
+temp/

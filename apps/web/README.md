@@ -1,5 +1,13 @@
 # React + Vite
 
+## Menjalankan aplikasi dengan API
+
+1. Salin `../api/.env.example` menjadi `../api/.env`, lalu isi `DATABASE_URL` dan `JWT_SECRET`.
+2. Salin `.env.example` menjadi `.env`. Nilai `VITE_API_URL=/api` memakai proxy Vite ke API lokal di `http://localhost:3000`.
+3. Pastikan database sudah disiapkan, lalu jalankan `pnpm dev` dari root repository untuk menjalankan web dan API.
+
+Untuk deployment, atur `VITE_API_URL` ke URL API yang dapat dijangkau browser dan diakhiri `/api`.
+
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
 Currently, two official plugins are available:

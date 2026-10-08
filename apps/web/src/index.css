@@ -1,1 +1,63 @@
 @import "tailwindcss";
+
+.public-site {
+  background: linear-gradient(180deg, #fbf8f0 0%, #f3f3ef 48%, #e7edf2 100%);
+}
+
+.public-site .min-h-screen.bg-white {
+  background-color: transparent;
+}
+
+.public-site :is(.bg-blue-600, .bg-teal-600) {
+  background-color: #2b4764;
+}
+
+.public-site .bg-teal-800 {
+  background-color: #2b4764;
+}
+
+.public-site [class~="bg-teal-700/60"] {
+  background-color: rgb(43 71 100 / 60%);
+}
+
+.public-site [class~="bg-teal-900/50"] {
+  background-color: rgb(31 54 80 / 50%);
+}
+
+.public-site :is(.bg-blue-50, .bg-teal-50) {
+  background-color: #f1eee6;
+}
+
+.public-site :is(.bg-blue-100, .bg-teal-100) {
+  background-color: #f2e8d3;
+}
+
+.public-site :is(.text-blue-600, .text-blue-700, .text-teal-600, .text-teal-700) {
+  color: #2b4764;
+}
+
+.public-site :is(.text-teal-100, .text-teal-200) {
+  color: #d7e2eb;
+}
+
+.public-site :is(.text-blue-500, .text-teal-500) {
+  color: #8a5a14;
+}
+
+.public-site [class~="hover:bg-blue-700"]:hover,
+.public-site [class~="hover:bg-teal-700"]:hover {
+  background-color: #1f3650;
+}
+
+.public-site [class~="hover:bg-blue-50"]:hover,
+.public-site [class~="hover:bg-teal-50"]:hover {
+  background-color: #f7f0e3;
+}
+
+.public-site [class~="hover:text-teal-800"]:hover {
+  color: #1f3650;
+}
+
+.public-site :is(.border-blue-100, .border-teal-100) {
+  border-color: #e8dcc2;
+}

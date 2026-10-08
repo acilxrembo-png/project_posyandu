@@ -1,13 +1,13 @@
 {
-  "name": "project_posyandu",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "name": "project-posyandu",
+  "private": true,
+  "packageManager": "pnpm@10.33.4",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "packageManager": "pnpm@10.33.4"
+    "dev": "pnpm --parallel --filter \"./apps/*\" dev",
+    "dev:web": "pnpm --filter web dev",
+    "dev:api": "pnpm --filter api dev",
+    "db:generate": "pnpm --filter database exec prisma generate",
+    "db:push": "pnpm --filter database exec prisma db push",
+    "db:seed": "pnpm --filter database exec prisma db seed"
+  }
 }

@@ -1,3 +1,4 @@
+
 generator client {
   provider = "prisma-client-js"
 }
@@ -5,4 +6,445 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+}
+
+// -----------------------------------------------------
+// ENUM
+// -----------------------------------------------------
+
+enum Role {
+  ADMIN
+  KADER
+  Masyarakat
+  }
+
+enum JenisKelamin {
+  LAKI_LAKI
+  PEREMPUAN
+}
+
+enum GolonganDarah {
+  A
+  B
+  AB
+  O
+  TIDAK_TAHU
+}
+
+enum StatusKehamilan {
+  AKTIF
+  MELAHIRKAN
+  KEGUGURAN
+}
+
+enum JenisSuplemen {
+  VITAMIN_A_BIRU
+  VITAMIN_A_MERAH
+  OBAT_CACING
+  PMT
+  TABLET_TAMBAH_DARAH
+}
+
+enum HubunganKeluarga {
+  KEPALA_KELUARGA
+  ISTRI
+  SUAMI
+  ANAK
+  ORANG_TUA
+  LAINNYA
+}
+
+// Status gizi berdasarkan BB/U (Berat Badan menurut Umur)
+enum StatusGiziBBU {
+  BERAT_BADAN_SANGAT_KURANG
+  BERAT_BADAN_KURANG
+  BERAT_BADAN_NORMAL
+  RISIKO_BERAT_BADAN_LEBIH
+}
+
+// Status gizi berdasarkan TB/U atau PB/U (Tinggi/Panjang Badan menurut Umur)
+enum StatusGiziTBU {
+  SANGAT_PENDEK
+  PENDEK
+  NORMAL
+  TINGGI
+}
+
+// Status gizi berdasarkan BB/TB atau BB/PB (Berat Badan menurut Tinggi/Panjang Badan)
+enum StatusGiziBBTB {
+  GIZI_BURUK
+  GIZI_KURANG
+  GIZI_BAIK
+  BERISIKO_GIZI_LEBIH
+  GIZI_LEBIH
+  OBESITAS
+}
+
+// -----------------------------------------------------
+// WILAYAH & ORGANISASI
+// -----------------------------------------------------
+
+model Puskesmas {
+  id        String     @id @default(cuid())
+  kode      String     @unique
+  nama      String
+  alamat    String?
+  telepon   String?
+  posyandu  Posyandu[]
+  users     User[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("puskesmas")
+}
+
+model Posyandu {
+  id          String  @id @default(cuid())
+  kode        String  @unique
+  nama        String
+  alamat      String?
+  rt          String?
+  rw          String?
+  desa        String
+  kecamatan   String
+  kabupaten   String
+  provinsi    String
+  aktif       Boolean @default(true)
+
+  puskesmasId String?
+  puskesmas   Puskesmas? @relation(fields: [puskesmasId], references: [id], onDelete: SetNull)
+
+  users    User[]
+  keluarga Keluarga[]
+  warga    Warga[]
+  kegiatan Kegiatan[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([puskesmasId])
+  @@map("posyandu")
+}
+
+model User {
+  id       String  @id @default(cuid())
+  nama     String
+  email    String  @unique
+  password String // simpan dalam bentuk hash (bcrypt/argon2)
+  telepon  String?
+  role     Role    @default(KADER)
+  aktif    Boolean @default(true)
+
+  posyanduId  String?
+  posyandu    Posyandu?  @relation(fields: [posyanduId], references: [id], onDelete: SetNull)
+  puskesmasId String?
+  puskesmas   Puskesmas? @relation(fields: [puskesmasId], references: [id], onDelete: SetNull)
+
+  penimbangan          Penimbangan[]
+  imunisasi            ImunisasiBalita[]
+  suplemen             PemberianSuplemen[]
+  pemeriksaanKehamilan PemeriksaanKehamilan[]
+  pemeriksaanLansia    PemeriksaanLansia[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([posyanduId])
+  @@index([puskesmasId])
+  @@map("users")
+}
+
+// -----------------------------------------------------
+// KELUARGA & WARGA
+// -----------------------------------------------------
+
+model Keluarga {
+  id              String  @id @default(cuid())
+  nomorKk         String  @unique
+  kepalaKeluarga  String
+  alamat          String?
+  rt              String?
+  rw              String?
+
+  posyanduId String
+  posyandu   Posyandu @relation(fields: [posyanduId], references: [id], onDelete: Restrict)
+
+  anggota Warga[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([posyanduId])
+  @@map("keluarga")
+}
+
+// Data dasar setiap orang yang dilayani posyandu (balita, ibu hamil, lansia)
+model Warga {
+  id            String        @id @default(cuid())
+  nik           String?       @unique
+  nama          String
+  tempatLahir   String?
+  tanggalLahir  DateTime      @db.Date
+  jenisKelamin  JenisKelamin
+  golonganDarah GolonganDarah @default(TIDAK_TAHU)
+  hubungan      HubunganKeluarga?
+  telepon       String?
+  aktif         Boolean       @default(true)
+
+  posyanduId String
+  posyandu   Posyandu @relation(fields: [posyanduId], references: [id], onDelete: Restrict)
+  keluargaId String?
+  keluarga   Keluarga? @relation(fields: [keluargaId], references: [id], onDelete: SetNull)
+
+  // Profil khusus (opsional)
+  profilBalita Balita?
+  anakDariIbu  Balita[]    @relation("IbuBalita")
+  kehamilan    Kehamilan[]
+  pemeriksaanLansia PemeriksaanLansia[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([posyanduId])
+  @@index([keluargaId])
+  @@index([nama])
+  @@map("warga")
+}
+
+// Profil tambahan untuk balita (0-59 bulan)
+model Balita {
+  id            String  @id @default(cuid())
+  nomorKia      String? @unique // Buku KIA
+  anakKe        Int?
+  beratLahir    Decimal? @db.Decimal(4, 2) // kg
+  panjangLahir  Decimal? @db.Decimal(5, 1) // cm
+  imd           Boolean @default(false) // Inisiasi Menyusu Dini
+  asiEksklusif  Boolean @default(false)
+
+  wargaId String @unique
+  warga   Warga  @relation(fields: [wargaId], references: [id], onDelete: Cascade)
+  ibuId   String?
+  ibu     Warga? @relation("IbuBalita", fields: [ibuId], references: [id], onDelete: SetNull)
+
+  penimbangan Penimbangan[]
+  imunisasi   ImunisasiBalita[]
+  suplemen    PemberianSuplemen[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([ibuId])
+  @@map("balita")
+}
+
+// -----------------------------------------------------
+// KEGIATAN (SESI / HARI BUKA POSYANDU)
+// -----------------------------------------------------
+
+model Kegiatan {
+  id        String   @id @default(cuid())
+  tanggal   DateTime @db.Date
+  tema      String?
+  lokasi    String?
+  catatan   String?
+
+  posyanduId String
+  posyandu   Posyandu @relation(fields: [posyanduId], references: [id], onDelete: Cascade)
+
+  penimbangan          Penimbangan[]
+  imunisasi            ImunisasiBalita[]
+  suplemen             PemberianSuplemen[]
+  pemeriksaanKehamilan PemeriksaanKehamilan[]
+  pemeriksaanLansia    PemeriksaanLansia[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([posyanduId, tanggal])
+  @@map("kegiatan")
+}
+
+// -----------------------------------------------------
+// LAYANAN BALITA
+// -----------------------------------------------------
+
+model Penimbangan {
+  id          String   @id @default(cuid())
+  umurBulan   Int
+  berat       Decimal  @db.Decimal(4, 2) // kg
+  tinggi      Decimal? @db.Decimal(5, 1) // cm (panjang/tinggi badan)
+  lingkarKepala Decimal? @db.Decimal(4, 1) // cm
+  lila        Decimal? @db.Decimal(4, 1) // lingkar lengan atas, cm
+  caraUkur    String? // "berbaring" / "berdiri"
+  naikBB      Boolean? // naik berat badan dibanding bulan lalu (N/T di KMS)
+
+  statusBBU  StatusGiziBBU?
+  statusTBU  StatusGiziTBU?
+  statusBBTB StatusGiziBBTB?
+
+  catatan String?
+
+  kegiatanId String
+  kegiatan   Kegiatan @relation(fields: [kegiatanId], references: [id], onDelete: Cascade)
+  balitaId   String
+  balita     Balita   @relation(fields: [balitaId], references: [id], onDelete: Cascade)
+  petugasId  String?
+  petugas    User?    @relation(fields: [petugasId], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([kegiatanId, balitaId])
+  @@index([balitaId])
+  @@map("penimbangan")
+}
+
+// Master jenis vaksin/imunisasi
+model Vaksin {
+  id            String  @id @default(cuid())
+  kode          String  @unique // mis. "HB0", "BCG", "POLIO1", "CAMPAK"
+  nama          String
+  umurAnjuranBulan Int? // umur anjuran pemberian
+  jumlahDosis   Int     @default(1)
+  keterangan    String?
+
+  imunisasi ImunisasiBalita[]
+
+  @@map("vaksin")
+}
+
+model ImunisasiBalita {
+  id       String   @id @default(cuid())
+  tanggal  DateTime @db.Date
+  dosisKe  Int      @default(1)
+  batchNo  String?
+  catatan  String?
+
+  balitaId   String
+  balita     Balita   @relation(fields: [balitaId], references: [id], onDelete: Cascade)
+  vaksinId   String
+  vaksin     Vaksin   @relation(fields: [vaksinId], references: [id], onDelete: Restrict)
+  kegiatanId String?
+  kegiatan   Kegiatan? @relation(fields: [kegiatanId], references: [id], onDelete: SetNull)
+  petugasId  String?
+  petugas    User?     @relation(fields: [petugasId], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now())
+
+  @@unique([balitaId, vaksinId, dosisKe])
+  @@index([kegiatanId])
+  @@map("imunisasi_balita")
+}
+
+model PemberianSuplemen {
+  id      String        @id @default(cuid())
+  jenis   JenisSuplemen
+  tanggal DateTime      @db.Date
+  jumlah  Int? // mis. jumlah tablet/porsi
+  catatan String?
+
+  balitaId   String
+  balita     Balita   @relation(fields: [balitaId], references: [id], onDelete: Cascade)
+  kegiatanId String?
+  kegiatan   Kegiatan? @relation(fields: [kegiatanId], references: [id], onDelete: SetNull)
+  petugasId  String?
+  petugas    User?     @relation(fields: [petugasId], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now())
+
+  @@index([balitaId, jenis])
+  @@map("pemberian_suplemen")
+}
+
+// -----------------------------------------------------
+// LAYANAN IBU HAMIL
+// -----------------------------------------------------
+
+model Kehamilan {
+  id       String          @id @default(cuid())
+  hpht     DateTime        @db.Date // hari pertama haid terakhir
+  hpl      DateTime?       @db.Date // hari perkiraan lahir
+  gravida  Int? // jumlah kehamilan
+  paritas  Int? // jumlah persalinan
+  abortus  Int?
+  status   StatusKehamilan @default(AKTIF)
+  tanggalAkhir DateTime?   @db.Date // tanggal persalinan / keguguran
+  penolongPersalinan String?
+  tempatPersalinan   String?
+
+  ibuId String
+  ibu   Warga @relation(fields: [ibuId], references: [id], onDelete: Cascade)
+
+  pemeriksaan PemeriksaanKehamilan[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([ibuId, status])
+  @@map("kehamilan")
+}
+
+model PemeriksaanKehamilan {
+  id                 String   @id @default(cuid())
+  tanggal            DateTime @db.Date
+  usiaKehamilanMinggu Int?
+  berat              Decimal? @db.Decimal(5, 2) // kg
+  tinggi             Decimal? @db.Decimal(5, 1) // cm
+  lila               Decimal? @db.Decimal(4, 1) // cm (< 23,5 = risiko KEK)
+  sistol             Int?
+  diastol            Int?
+  tinggiFundus       Decimal? @db.Decimal(4, 1) // cm
+  hemoglobin         Decimal? @db.Decimal(4, 1) // g/dL
+  jumlahTabletFe     Int?
+  imunisasiTT        Boolean  @default(false)
+  risikoTinggi       Boolean  @default(false)
+  dirujuk            Boolean  @default(false)
+  keluhan            String?
+  catatan            String?
+
+  kehamilanId String
+  kehamilan   Kehamilan @relation(fields: [kehamilanId], references: [id], onDelete: Cascade)
+  kegiatanId  String?
+  kegiatan    Kegiatan? @relation(fields: [kegiatanId], references: [id], onDelete: SetNull)
+  petugasId   String?
+  petugas     User?     @relation(fields: [petugasId], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now())
+
+  @@index([kehamilanId])
+  @@map("pemeriksaan_kehamilan")
+}
+
+// -----------------------------------------------------
+// LAYANAN LANSIA
+// -----------------------------------------------------
+
+model PemeriksaanLansia {
+  id         String   @id @default(cuid())
+  tanggal    DateTime @db.Date
+  berat      Decimal? @db.Decimal(5, 2) // kg
+  tinggi     Decimal? @db.Decimal(5, 1) // cm
+  lingkarPerut Decimal? @db.Decimal(5, 1) // cm
+  sistol     Int?
+  diastol    Int?
+  gulaDarah  Decimal? @db.Decimal(5, 1) // mg/dL
+  kolesterol Decimal? @db.Decimal(5, 1) // mg/dL
+  asamUrat   Decimal? @db.Decimal(4, 1) // mg/dL
+  keluhan    String?
+  dirujuk    Boolean  @default(false)
+  catatan    String?
+
+  wargaId    String
+  warga      Warga    @relation(fields: [wargaId], references: [id], onDelete: Cascade)
+  kegiatanId String?
+  kegiatan   Kegiatan? @relation(fields: [kegiatanId], references: [id], onDelete: SetNull)
+  petugasId  String?
+  petugas    User?     @relation(fields: [petugasId], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now())
+
+  @@index([wargaId])
+  @@index([kegiatanId])
+  @@map("pemeriksaan_lansia")
 }

@@ -32,8 +32,8 @@ function BagianPembuka() {
         aria-hidden="true"
         className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_60%_70%_at_8%_0%,rgba(255,206,120,0.75),transparent_70%),radial-gradient(ellipse_55%_60%_at_100%_55%,rgba(110,140,178,0.38),transparent_70%)]"
       />
-      <div className="relative mx-auto grid max-w-7xl items-center gap-12 px-5 py-14 sm:px-8 sm:py-20 lg:grid-cols-[1fr_0.92fr] lg:gap-16 lg:py-24">
-        <div className="relative z-10">
+      <div className="relative mx-auto grid max-w-7xl items-center gap-10 px-5 py-14 sm:px-8 sm:py-20 md:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] md:gap-10 lg:gap-12 lg:py-24 xl:gap-16">
+        <div className="relative z-10 min-w-0">
           <span className="inline-flex items-center gap-2.5 text-xs font-bold uppercase tracking-[0.2em] text-[#2b4764] sm:text-sm">
             <span className="h-px w-8 bg-amber-600" />
             Posyandu RW 08
@@ -71,13 +71,17 @@ function BagianPembuka() {
           </div>
         </div>
 
-        <div className="relative mx-auto w-full max-w-xl lg:justify-self-end">
-          <figure className="group relative aspect-[4/3] overflow-hidden rounded-2xl bg-[#c9d5e2] shadow-xl shadow-[#2b4764]/20 ring-1 ring-white/60 sm:aspect-[3/2]">
-            <img src="/foto%20layanan.jpg" alt="Ilustrasi kader kesehatan sedang memeriksa anak di posyandu" fetchPriority="high" className="h-full w-full object-cover object-[center_44%] transition duration-700 group-hover:scale-[1.02]" />
-            <div className="absolute inset-0 bg-gradient-to-t from-[#1f3650]/70 via-transparent to-[#ffce78]/10" />
-            <figcaption className="absolute inset-x-0 bottom-0 p-5 text-white sm:p-7">
-              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-white/80">Bersama untuk keluarga</p>
-              <p className="mt-2 max-w-sm text-xl font-semibold leading-snug sm:text-2xl">Setiap tumbuh kembang berarti.</p>
+        <div className="relative mx-auto w-full max-w-xl min-w-0 lg:justify-self-end">
+          <figure className="group relative">
+            <div className="relative aspect-[4/3] overflow-hidden rounded-[1.75rem] bg-[#d9e1e8] shadow-xl shadow-[#2b4764]/15 ring-1 ring-white/80 sm:aspect-[3/2]">
+              <img src="/foto%20layanan.jpg" alt="Ilustrasi kader kesehatan sedang memeriksa anak di posyandu" fetchPriority="high" className="h-full w-full object-cover object-[center_44%] transition duration-700 group-hover:scale-[1.02]" />
+            </div>
+            <figcaption className="mt-4 flex items-center gap-4 rounded-2xl border border-white/80 bg-white/75 px-5 py-4 shadow-lg shadow-[#2b4764]/10 backdrop-blur-sm sm:px-6">
+              <span className="h-10 w-1 shrink-0 rounded-full bg-amber-500" aria-hidden="true" />
+              <span>
+                <span className="block text-xs font-bold uppercase tracking-[0.16em] text-[#8a5a14]">Bersama untuk keluarga</span>
+                <span className="mt-1 block text-base font-semibold leading-snug text-[#2b4764] sm:text-lg">Setiap tumbuh kembang berarti.</span>
+              </span>
             </figcaption>
           </figure>
         </div>
@@ -195,8 +199,8 @@ function JadwalKegiatan() {
 
 export default function Beranda() {
   return (
-    // Satu gradasi vertikal untuk seluruh halaman: emas hangat -> krem -> biru kabut
-    <main className="min-h-screen bg-[linear-gradient(180deg,#f6e2b6_0%,#f8ecd6_20%,#eef0ec_42%,#d3dde7_68%,#aebfd0_100%)] font-sans selection:bg-amber-100">
+    // Gradasi lembut menyatukan aksen emas hangat dan biru kabut.
+    <main className="min-h-screen bg-[linear-gradient(180deg,#fbf8f0_0%,#f5f3ed_34%,#e8edf1_72%,#dce5ec_100%)] font-sans selection:bg-amber-100">
       <BagianPembuka />
       <SorotanLayanan />
       <DaftarLayanan />
