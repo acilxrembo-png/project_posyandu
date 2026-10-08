@@ -35,6 +35,8 @@
 
    Jadwal kegiatan mendatang ditampilkan di beranda dan halaman informasi dari `GET /api/informasi/kegiatan`. Endpoint publik ini hanya mengembalikan tanggal, tema, dan lokasi; tanggal dibandingkan menurut zona waktu `Asia/Jakarta`.
 
+   Admin dan kader dapat mengelola kegiatan, keluarga, warga, profil balita, dan hasil penimbangan dari dashboard setelah masuk. Admin juga dapat membuat dan mengelola akun. Akun kader perlu ditautkan ke Posyandu agar batas akses data dan ringkasan dashboard berlaku dengan benar.
+
 Login contoh setelah seed:
 
 | Peran | Email | Kata sandi |

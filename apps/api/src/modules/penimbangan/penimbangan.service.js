@@ -14,11 +14,40 @@ const INCLUDE = {
   petugas: { select: { id: true, nama: true } },
 };
 
+function scopeWhere(user) {
+  if (user.role !== "KADER") return {};
+  if (!user.posyanduId) {
+    throw httpError(403, "Akun kader belum terhubung ke posyandu");
+  }
+  return { balita: { warga: { posyanduId: user.posyanduId } } };
+}
+
+async function validateRelations(data, user, existing = {}) {
+  if (user.role !== "KADER") return;
+  if (!user.posyanduId) {
+    throw httpError(403, "Akun kader belum terhubung ke posyandu");
+  }
+
+  const balitaId = data.balitaId || existing.balitaId;
+  const kegiatanId = data.kegiatanId || existing.kegiatanId;
+  const [balita, kegiatan] = await Promise.all([
+    prisma.balita.findFirst({
+      where: { id: balitaId, warga: { posyanduId: user.posyanduId } },
+      select: { id: true },
+    }),
+    prisma.kegiatan.findFirst({
+      where: { id: kegiatanId, posyanduId: user.posyanduId },
+      select: { id: true },
+    }),
+  ]);
+  if (!balita || !kegiatan) throw httpError(404, "Data balita atau kegiatan tidak ditemukan");
+}
+
 // GET /  -> daftar data (pagination, filter, search)
-async function list(query) {
+async function list(query, user) {
   const { page, limit, skip } = parsePagination(query);
 
-  const where = {};
+  const where = { ...scopeWhere(user) };
 
   for (const field of FILTERS) {
     if (query[field]) where[field] = String(query[field]);
@@ -37,9 +66,9 @@ async function list(query) {
 }
 
 // GET /:id  -> detail satu data
-async function getById(id) {
-  const item = await prisma.penimbangan.findUnique({
-    where: { id },
+async function getById(id, user) {
+  const item = await prisma.penimbangan.findFirst({
+    where: { id, ...scopeWhere(user) },
     include: INCLUDE,
   });
   if (!item) throw httpError(404, "Data tidak ditemukan");
@@ -49,6 +78,7 @@ async function getById(id) {
 // POST /  -> tambah data baru
 async function create(body, user) {
   const data = cleanBody(body);
+  await validateRelations(data, user);
 
   // Petugas diisi otomatis dari user yang sedang login
   if (!data.petugasId) data.petugasId = user.id;
@@ -57,15 +87,26 @@ async function create(body, user) {
 }
 
 // PATCH/PUT /:id  -> ubah data
-async function update(id, body) {
+async function update(id, body, user) {
   const data = cleanBody(body);
+  const existing = await prisma.penimbangan.findFirst({
+    where: { id, ...scopeWhere(user) },
+    select: { id: true, balitaId: true, kegiatanId: true },
+  });
+  if (!existing) throw httpError(404, "Data tidak ditemukan");
+  await validateRelations(data, user, existing);
 
   // Error P2025 (data tidak ada) otomatis menjadi 404 di error middleware
   return prisma.penimbangan.update({ where: { id }, data, include: INCLUDE });
 }
 
 // DELETE /:id  -> hapus data
-async function remove(id) {
+async function remove(id, user) {
+  const existing = await prisma.penimbangan.findFirst({
+    where: { id, ...scopeWhere(user) },
+    select: { id: true },
+  });
+  if (!existing) throw httpError(404, "Data tidak ditemukan");
   await prisma.penimbangan.delete({ where: { id } });
 }
 

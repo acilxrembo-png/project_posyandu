@@ -13,11 +13,19 @@ const INCLUDE = {
   ibu: { select: { id: true, nama: true } },
 };
 
+function scopeWhere(user) {
+  if (user.role !== "KADER") return {};
+  if (!user.posyanduId) {
+    throw httpError(403, "Akun kader belum terhubung ke posyandu");
+  }
+  return { warga: { posyanduId: user.posyanduId } };
+}
+
 // GET /  -> daftar data (pagination, filter, search)
-async function list(query) {
+async function list(query, user) {
   const { page, limit, skip } = parsePagination(query);
 
-  const where = {};
+  const where = { ...scopeWhere(user) };
 
   for (const field of FILTERS) {
     if (query[field]) where[field] = String(query[field]);
@@ -36,9 +44,9 @@ async function list(query) {
 }
 
 // GET /:id  -> detail satu data
-async function getById(id) {
-  const item = await prisma.balita.findUnique({
-    where: { id },
+async function getById(id, user) {
+  const item = await prisma.balita.findFirst({
+    where: { id, ...scopeWhere(user) },
     include: INCLUDE,
   });
   if (!item) throw httpError(404, "Data tidak ditemukan");
@@ -46,22 +54,61 @@ async function getById(id) {
 }
 
 // POST /  -> tambah data baru
-async function create(body) {
+async function create(body, user) {
   const data = cleanBody(body);
+  if (user.role === "KADER") {
+    const allowedWhere = { posyanduId: user.posyanduId };
+    const warga = await prisma.warga.findFirst({
+      where: { id: data.wargaId, ...allowedWhere },
+      select: { id: true },
+    });
+    if (!warga) throw httpError(404, "Data warga tidak ditemukan");
+    if (data.ibuId) {
+      const ibu = await prisma.warga.findFirst({
+        where: { id: data.ibuId, ...allowedWhere },
+        select: { id: true },
+      });
+      if (!ibu) throw httpError(404, "Data ibu tidak ditemukan");
+    }
+  }
 
   return prisma.balita.create({ data, include: INCLUDE });
 }
 
 // PATCH/PUT /:id  -> ubah data
-async function update(id, body) {
+async function update(id, body, user) {
   const data = cleanBody(body);
+  const existing = await prisma.balita.findFirst({
+    where: { id, ...scopeWhere(user) },
+    select: { id: true },
+  });
+  if (!existing) throw httpError(404, "Data tidak ditemukan");
+  if (user.role === "KADER" && data.wargaId) {
+    const warga = await prisma.warga.findFirst({
+      where: { id: data.wargaId, posyanduId: user.posyanduId },
+      select: { id: true },
+    });
+    if (!warga) throw httpError(404, "Data warga tidak ditemukan");
+  }
+  if (user.role === "KADER" && data.ibuId) {
+    const ibu = await prisma.warga.findFirst({
+      where: { id: data.ibuId, posyanduId: user.posyanduId },
+      select: { id: true },
+    });
+    if (!ibu) throw httpError(404, "Data ibu tidak ditemukan");
+  }
 
   // Error P2025 (data tidak ada) otomatis menjadi 404 di error middleware
   return prisma.balita.update({ where: { id }, data, include: INCLUDE });
 }
 
 // DELETE /:id  -> hapus data
-async function remove(id) {
+async function remove(id, user) {
+  const existing = await prisma.balita.findFirst({
+    where: { id, ...scopeWhere(user) },
+    select: { id: true },
+  });
+  if (!existing) throw httpError(404, "Data tidak ditemukan");
   await prisma.balita.delete({ where: { id } });
 }
 
