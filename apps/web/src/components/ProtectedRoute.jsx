@@ -20,14 +20,12 @@ const ProtectedRoute = ({ allowedRoles }) => {
     );
   }
 
-  // 2. Jika tidak ada yang login, lempar ke halaman login
-  // Simpan rute yang sedang dicoba diakses ke state, agar bisa di-redirect balik setelah sukses login
+
   if (!isAuthenticated) {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
-  // 3. (Opsional) Jika aplikasi Anda menggunakan sistem Role (Kader, Bidan, Admin)
-  // Cek apakah role user saat ini diizinkan untuk mengakses halaman ini
+
   if (allowedRoles && !allowedRoles.includes(user?.role)) {
     // Lempar ke halaman "Tidak Memiliki Akses" atau kembali ke Beranda
     return <Navigate to="/unauthorized" replace />;
