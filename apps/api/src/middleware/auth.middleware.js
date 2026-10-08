@@ -26,6 +26,7 @@ async function authenticate(req, res, next) {
       aktif: true,
       posyanduId: true,
       puskesmasId: true,
+      wargaId: true,
     },
   });
 
@@ -46,4 +47,11 @@ function authorize(...roles) {
   };
 }
 
-export { authenticate, authorize };
+function staffReadOnlyAdmin(req, res, next) {
+  if (req.user.role === "ADMIN" && !["GET", "HEAD"].includes(req.method)) {
+    return res.status(403).json({ message: "Admin hanya dapat melihat data. Untuk perubahan data, hubungi Kader." });
+  }
+  next();
+}
+
+export { authenticate, authorize, staffReadOnlyAdmin };

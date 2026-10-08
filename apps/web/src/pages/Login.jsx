@@ -61,7 +61,7 @@ const Login = () => {
     >
       {justRegistered && !errorMessage && (
         <div role="status" className="mb-6 rounded-xl border border-teal-200 bg-teal-50 p-4 text-sm text-teal-800">
-          Akun berhasil dibuat. Silakan masuk dengan email dan kata sandi Anda.
+          Pendaftaran berhasil dikirim. Kader akan memeriksa identitas Anda; akun bisa digunakan setelah diverifikasi.
         </div>
       )}
 

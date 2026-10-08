@@ -30,4 +30,14 @@ async function remove(req, res) {
   res.json({ message: "Data berhasil dihapus" });
 }
 
-export { list, getById, create, update, remove };
+async function listPendingRegistrations(req, res) {
+  const result = await wargaService.listPendingRegistrations(req.user);
+  res.json(result);
+}
+
+async function verifyRegistration(req, res) {
+  const result = await wargaService.verifyRegistration(req.params.userId, req.user);
+  res.json(result);
+}
+
+export { list, getById, create, update, remove, listPendingRegistrations, verifyRegistration };

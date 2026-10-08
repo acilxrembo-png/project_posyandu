@@ -1,5 +1,5 @@
 import * as usersService from "./users.service.js";
-import { createUserSchema, updateUserSchema } from "./users.validation.js";
+import { createUserSchema } from "./users.validation.js";
 
 async function list(req, res) {
   const result = await usersService.list(req.query);
@@ -17,15 +17,9 @@ async function create(req, res) {
   res.status(201).json({ data });
 }
 
-async function update(req, res) {
-  const input = updateUserSchema.parse(req.body);
-  const data = await usersService.update(req.params.id, input, req.user);
-  res.json({ data });
-}
-
 async function remove(req, res) {
   await usersService.remove(req.params.id, req.user);
   res.json({ message: "User berhasil dihapus" });
 }
 
-export { list, getById, create, update, remove };
+export { list, getById, create, remove };

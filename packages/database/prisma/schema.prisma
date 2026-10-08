@@ -119,6 +119,7 @@ model Posyandu {
   keluarga Keluarga[]
   warga    Warga[]
   kegiatan Kegiatan[]
+  pendaftaranWarga PendaftaranWarga[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -140,6 +141,9 @@ model User {
   posyandu    Posyandu?  @relation(fields: [posyanduId], references: [id], onDelete: SetNull)
   puskesmasId String?
   puskesmas   Puskesmas? @relation(fields: [puskesmasId], references: [id], onDelete: SetNull)
+  wargaId     String?    @unique
+  warga       Warga?     @relation("AkunWarga", fields: [wargaId], references: [id], onDelete: SetNull)
+  pendaftaran PendaftaranWarga?
 
   penimbangan          Penimbangan[]
   imunisasi            ImunisasiBalita[]
@@ -196,6 +200,7 @@ model Warga {
   posyandu   Posyandu @relation(fields: [posyanduId], references: [id], onDelete: Restrict)
   keluargaId String?
   keluarga   Keluarga? @relation(fields: [keluargaId], references: [id], onDelete: SetNull)
+  akun       User?     @relation("AkunWarga")
 
   // Profil khusus (opsional)
   profilBalita Balita?
@@ -210,6 +215,25 @@ model Warga {
   @@index([keluargaId])
   @@index([nama])
   @@map("warga")
+}
+
+model PendaftaranWarga {
+  id           String       @id @default(cuid())
+  nama         String
+  nik          String       @unique
+  tanggalLahir DateTime     @db.Date
+  jenisKelamin JenisKelamin
+  telepon      String?
+
+  userId     String  @unique
+  user       User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  posyanduId String
+  posyandu   Posyandu @relation(fields: [posyanduId], references: [id], onDelete: Restrict)
+
+  createdAt DateTime @default(now())
+
+  @@index([posyanduId, createdAt])
+  @@map("pendaftaran_warga")
 }
 
 // Profil tambahan untuk balita (0-59 bulan)

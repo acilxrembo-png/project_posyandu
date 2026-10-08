@@ -6,6 +6,7 @@ import { useAuth } from '../context/useAuth';
 import KelolaKegiatan from './KelolaKegiatan';
 import DataKependudukan from './DataKependudukan';
 import KelolaAkun from './KelolaAkun';
+import VerifikasiPendaftaran from './VerifikasiPendaftaran';
 
 const metrik = [
   { key: 'totalWarga', label: 'Warga terdaftar', ikon: HiOutlineUserGroup },
@@ -131,7 +132,8 @@ export default function DashboardRingkasan({ title, description }) {
 
         <KelolaKegiatan role={user?.role} />
         <DataKependudukan role={user?.role} />
-        {user?.role === 'ADMIN' && <KelolaAkun user={user} />}
+        {user?.role === 'ADMIN' && <KelolaAkun />}
+        {user?.role === 'KADER' && <VerifikasiPendaftaran />}
 
         <nav aria-label="Tautan cepat" className="mt-8 flex flex-wrap gap-3">
           <Link to="/layanan" className="rounded-xl bg-[#2b4764] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[#1f3650]">

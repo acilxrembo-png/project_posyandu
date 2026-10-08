@@ -1,12 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import api from '../services/api';
 
-const roles = [
-  ['KADER', 'Kader'],
-  ['ADMIN', 'Admin'],
-  ['Masyarakat', 'Warga'],
-];
-
 const getErrorMessage = (error) => error.response?.data?.message
   || 'Permintaan belum berhasil. Periksa data dan koneksi API.';
 
@@ -15,16 +9,13 @@ const emptyForm = () => ({
   email: '',
   password: '',
   telepon: '',
-  role: 'KADER',
-  aktif: true,
   posyanduId: '',
 });
 
-export default function KelolaAkun({ user }) {
+export default function KelolaAkun() {
   const [users, setUsers] = useState([]);
   const [posyandu, setPosyandu] = useState([]);
   const [form, setForm] = useState(emptyForm);
-  const [editingId, setEditingId] = useState(null);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [search, setSearch] = useState('');
@@ -90,7 +81,6 @@ export default function KelolaAkun({ user }) {
 
   const resetForm = () => {
     setForm(emptyForm());
-    setEditingId(null);
   };
 
   const updateForm = (key, value) => setForm((current) => ({ ...current, [key]: value }));
@@ -101,7 +91,7 @@ export default function KelolaAkun({ user }) {
     setSuccess('');
     setSaving(true);
     try {
-      if (form.role === 'KADER' && !form.posyanduId) {
+      if (!form.posyanduId) {
         throw new Error('Pilih Posyandu untuk akun kader agar akses data dapat dibatasi dengan benar.');
       }
 
@@ -109,20 +99,14 @@ export default function KelolaAkun({ user }) {
         nama: form.nama.trim(),
         email: form.email.trim(),
         telepon: form.telepon.trim() || null,
-        role: form.role,
-        aktif: Boolean(form.aktif),
         posyanduId: form.posyanduId || null,
       };
       if (form.password) payload.password = form.password;
 
-      if (editingId) {
-        await api.patch(`/users/${editingId}`, payload);
-      } else {
-        if (!payload.password) throw new Error('Kata sandi wajib diisi untuk akun baru.');
-        await api.post('/users', payload);
-      }
+      if (!payload.password) throw new Error('Kata sandi wajib diisi untuk akun baru.');
+      await api.post('/users', payload);
 
-      setSuccess(editingId ? 'Akun berhasil diperbarui.' : 'Akun berhasil dibuat.');
+      setSuccess('Akun Kader berhasil dibuat.');
       resetForm();
       await loadUsers(page, search);
     } catch (requestError) {
@@ -132,29 +116,13 @@ export default function KelolaAkun({ user }) {
     }
   };
 
-  const editUser = (account) => {
-    setForm({
-      nama: account.nama,
-      email: account.email,
-      password: '',
-      telepon: account.telepon || '',
-      role: account.role,
-      aktif: account.aktif,
-      posyanduId: account.posyanduId || '',
-    });
-    setEditingId(account.id);
-    setError('');
-    setSuccess('');
-  };
-
   const deleteUser = async (account) => {
     if (!window.confirm(`Hapus akun ${account.nama} (${account.email})?`)) return;
     setError('');
     setSuccess('');
     try {
       await api.delete(`/users/${account.id}`);
-      setSuccess('Akun berhasil dihapus.');
-      if (editingId === account.id) resetForm();
+      setSuccess('Akun Kader berhasil dihapus.');
       await loadUsers(page, search);
     } catch (requestError) {
       setError(getErrorMessage(requestError));
@@ -167,7 +135,7 @@ export default function KelolaAkun({ user }) {
     <section className="mt-8 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-7" aria-labelledby="kelola-akun-title">
       <div className="mb-5">
         <h2 id="kelola-akun-title" className="text-lg font-semibold text-slate-900">Kelola akun pengguna</h2>
-        <p className="mt-1 text-sm text-slate-600">Buat akun kader dan warga, atur peran, atau nonaktifkan akses.</p>
+        <p className="mt-1 text-sm text-slate-600">Tambahkan atau hapus akun Kader. Hak akses dan Posyandu Kader ditetapkan oleh sistem.</p>
       </div>
 
       {error && <p role="alert" className="mb-4 rounded-xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-800">{error}</p>}
@@ -184,38 +152,25 @@ export default function KelolaAkun({ user }) {
         </div>
         <div>
           <label htmlFor="account-password" className="mb-1.5 block text-sm font-medium text-slate-700">
-            Kata sandi {editingId ? '(isi hanya jika ingin mengganti)' : '*'}
+            Kata sandi *
           </label>
-          <input id="account-password" type="password" value={form.password} onChange={(event) => updateForm('password', event.target.value)} required={!editingId} minLength={6} autoComplete="new-password" className={inputClass} />
+          <input id="account-password" type="password" value={form.password} onChange={(event) => updateForm('password', event.target.value)} required minLength={8} autoComplete="new-password" className={inputClass} />
         </div>
         <div>
           <label htmlFor="account-phone" className="mb-1.5 block text-sm font-medium text-slate-700">Nomor telepon</label>
           <input id="account-phone" type="tel" value={form.telepon} onChange={(event) => updateForm('telepon', event.target.value)} maxLength={30} className={inputClass} />
         </div>
         <div>
-          <label htmlFor="account-role" className="mb-1.5 block text-sm font-medium text-slate-700">Peran *</label>
-          <select id="account-role" value={form.role} onChange={(event) => updateForm('role', event.target.value)} required className={inputClass}>
-            {roles.map(([value, label]) => <option key={value} value={value}>{label}</option>)}
-          </select>
-        </div>
-        <div>
-          <label htmlFor="account-posyandu" className="mb-1.5 block text-sm font-medium text-slate-700">Posyandu (untuk kader)</label>
-          <select id="account-posyandu" value={form.posyanduId} onChange={(event) => updateForm('posyanduId', event.target.value)} required={form.role === 'KADER'} className={inputClass}>
-            <option value="">{form.role === 'KADER' ? 'Pilih Posyandu untuk kader' : 'Tidak ditetapkan'}</option>
+          <label htmlFor="account-posyandu" className="mb-1.5 block text-sm font-medium text-slate-700">Posyandu *</label>
+          <select id="account-posyandu" value={form.posyanduId} onChange={(event) => updateForm('posyanduId', event.target.value)} required className={inputClass}>
+            <option value="">Pilih Posyandu untuk Kader</option>
             {posyandu.map((item) => <option key={item.id} value={item.id}>{item.nama}</option>)}
           </select>
         </div>
-        {editingId && (
-          <label htmlFor="account-active" className="flex items-center gap-2 text-sm font-medium text-slate-700 sm:col-span-2">
-            <input id="account-active" type="checkbox" checked={Boolean(form.aktif)} onChange={(event) => updateForm('aktif', event.target.checked)} className="h-4 w-4 rounded border-slate-300 text-[#2b4764] focus:ring-[#2b4764]" />
-            Akun aktif dan dapat masuk
-          </label>
-        )}
         <div className="flex flex-wrap gap-3 sm:col-span-2">
           <button type="submit" disabled={saving || loading} className="rounded-lg bg-[#2b4764] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[#1f3650] disabled:cursor-not-allowed disabled:opacity-60">
-            {saving ? 'Menyimpan...' : editingId ? 'Simpan perubahan' : 'Buat akun'}
+            {saving ? 'Menyimpan...' : 'Tambah akun Kader'}
           </button>
-          {editingId && <button type="button" onClick={resetForm} className="rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50">Batal</button>}
         </div>
       </form>
 
@@ -237,7 +192,7 @@ export default function KelolaAkun({ user }) {
               <tr>
                 <th scope="col" className="px-4 py-3 font-semibold">Nama</th>
                 <th scope="col" className="px-4 py-3 font-semibold">Email</th>
-                <th scope="col" className="px-4 py-3 font-semibold">Peran</th>
+                <th scope="col" className="px-4 py-3 font-semibold">Posyandu</th>
                 <th scope="col" className="px-4 py-3 font-semibold">Status</th>
                 <th scope="col" className="px-4 py-3 font-semibold">Aksi</th>
               </tr>
@@ -247,12 +202,11 @@ export default function KelolaAkun({ user }) {
                 <tr key={account.id}>
                   <td className="whitespace-nowrap px-4 py-3 font-medium text-slate-900">{account.nama}</td>
                   <td className="whitespace-nowrap px-4 py-3 text-slate-700">{account.email}</td>
-                  <td className="whitespace-nowrap px-4 py-3 text-slate-700">{roles.find(([value]) => value === account.role)?.[1] || account.role}</td>
+                  <td className="whitespace-nowrap px-4 py-3 text-slate-700">{account.posyandu?.nama || '—'}</td>
                   <td className="whitespace-nowrap px-4 py-3 text-slate-700">{account.aktif ? 'Aktif' : 'Nonaktif'}</td>
                   <td className="whitespace-nowrap px-4 py-3">
                     <div className="flex gap-2">
-                      <button type="button" onClick={() => editUser(account)} className="rounded-md border border-slate-300 px-2.5 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50">Ubah</button>
-                      <button type="button" disabled={account.id === user?.id} onClick={() => void deleteUser(account)} className="rounded-md border border-rose-200 px-2.5 py-1.5 text-xs font-semibold text-rose-700 hover:bg-rose-50 disabled:cursor-not-allowed disabled:opacity-50" title={account.id === user?.id ? 'Akun yang sedang digunakan tidak dapat dihapus' : undefined}>Hapus</button>
+                      <button type="button" onClick={() => void deleteUser(account)} className="rounded-md border border-rose-200 px-2.5 py-1.5 text-xs font-semibold text-rose-700 hover:bg-rose-50">Hapus akun Kader</button>
                     </div>
                   </td>
                 </tr>

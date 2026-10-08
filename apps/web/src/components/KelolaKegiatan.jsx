@@ -138,14 +138,14 @@ export default function KelolaKegiatan({ role }) {
   return (
     <section className="mt-8 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-7" aria-labelledby="kelola-kegiatan-title">
       <div className="mb-6">
-        <h2 id="kelola-kegiatan-title" className="text-lg font-semibold text-slate-900">Kelola jadwal kegiatan</h2>
-        <p className="mt-1 text-sm text-slate-600">Kegiatan yang dicatat di sini akan tampil pada halaman informasi publik.</p>
+        <h2 id="kelola-kegiatan-title" className="text-lg font-semibold text-slate-900">{isAdmin ? 'Laporan kegiatan' : 'Kelola jadwal kegiatan'}</h2>
+        <p className="mt-1 text-sm text-slate-600">{isAdmin ? 'Pantau jadwal layanan yang tercatat.' : 'Kegiatan yang dicatat di sini akan tampil pada halaman informasi publik.'}</p>
       </div>
 
       {error && <p role="alert" className="mb-4 rounded-xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-800">{error}</p>}
       {success && <p role="status" className="mb-4 rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-800">{success}</p>}
 
-      <form onSubmit={handleSubmit} className="grid gap-4 rounded-xl bg-[#f7f5ef] p-4 sm:grid-cols-2 sm:p-5">
+      {!isAdmin && <form onSubmit={handleSubmit} className="grid gap-4 rounded-xl bg-[#f7f5ef] p-4 sm:grid-cols-2 sm:p-5">
         <div>
           <label htmlFor="kegiatan-tanggal" className="mb-1.5 block text-sm font-medium text-slate-700">Tanggal</label>
           <input
@@ -211,7 +211,7 @@ export default function KelolaKegiatan({ role }) {
             </button>
           )}
         </div>
-      </form>
+      </form>}
 
       <div className="mt-6">
         <h3 className="mb-3 font-semibold text-slate-900">Kegiatan tercatat</h3>
@@ -229,14 +229,14 @@ export default function KelolaKegiatan({ role }) {
                     {tanggalLokal(item.tanggal)}{item.lokasi ? ` · ${item.lokasi}` : ''}
                   </p>
                 </div>
-                <div className="flex gap-2">
+                {!isAdmin && <div className="flex gap-2">
                   <button type="button" onClick={() => handleEdit(item)} className="rounded-lg border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50">
                     Ubah
                   </button>
                   <button type="button" onClick={() => handleDelete(item)} className="rounded-lg border border-rose-200 px-3 py-2 text-sm font-medium text-rose-700 hover:bg-rose-50">
                     Hapus
                   </button>
-                </div>
+                </div>}
               </li>
             ))}
           </ul>

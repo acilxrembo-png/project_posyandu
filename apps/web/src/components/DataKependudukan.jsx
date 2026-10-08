@@ -245,6 +245,7 @@ function createEmptyForm(fields) {
 
 export default function DataKependudukan({ role }) {
   const isAdmin = role === 'ADMIN';
+  const canManage = role === 'KADER';
   const [resourceKey, setResourceKey] = useState('warga');
   const resource = MASTER_DATA[resourceKey];
   const visibleFields = useMemo(
@@ -613,7 +614,9 @@ export default function DataKependudukan({ role }) {
     <section className="mt-8 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-7" aria-labelledby="data-kependudukan-title">
       <div className="mb-5">
         <h2 id="data-kependudukan-title" className="text-lg font-semibold text-slate-900">Data layanan</h2>
-        <p className="mt-1 text-sm text-slate-600">Kelola data warga dan layanan Posyandu sesuai wilayah akses Anda.</p>
+        <p className="mt-1 text-sm text-slate-600">
+          {canManage ? 'Kelola data dan pemeriksaan warga pada Posyandu Anda.' : 'Lihat data dan laporan layanan Posyandu.'}
+        </p>
       </div>
 
       <div className="mb-5 flex flex-wrap gap-2" role="tablist" aria-label="Jenis data">
@@ -646,26 +649,28 @@ export default function DataKependudukan({ role }) {
       {success && <p role="status" className="mb-4 rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-800">{success}</p>}
 
       <div id="panel-data" role="tabpanel" aria-labelledby={`tab-${resourceKey}`}>
-        <form onSubmit={submitForm} className="grid gap-4 rounded-xl bg-[#f7f5ef] p-4 sm:grid-cols-2 sm:p-5">
-          {visibleFields.map((field) => (
-            <div key={field.key} className={field.type === 'textarea' ? 'sm:col-span-2' : ''}>
-              <label htmlFor={`data-${field.key}`} className="mb-1.5 block text-sm font-medium text-slate-700">
-                {field.label}{field.required ? ' *' : ''}
-              </label>
-              {fieldControl(field)}
-            </div>
-          ))}
-          <div className="flex flex-wrap gap-3 sm:col-span-2">
-            <button type="submit" disabled={saving || loading} className="rounded-lg bg-[#2b4764] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[#1f3650] disabled:cursor-not-allowed disabled:opacity-60">
-              {saving ? 'Menyimpan...' : editingId ? 'Simpan perubahan' : `Tambah ${resource.title.toLowerCase()}`}
-            </button>
-            {editingId && (
-              <button type="button" onClick={resetForm} className="rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50">
-                Batal
+        {canManage && (
+          <form onSubmit={submitForm} className="grid gap-4 rounded-xl bg-[#f7f5ef] p-4 sm:grid-cols-2 sm:p-5">
+            {visibleFields.map((field) => (
+              <div key={field.key} className={field.type === 'textarea' ? 'sm:col-span-2' : ''}>
+                <label htmlFor={`data-${field.key}`} className="mb-1.5 block text-sm font-medium text-slate-700">
+                  {field.label}{field.required ? ' *' : ''}
+                </label>
+                {fieldControl(field)}
+              </div>
+            ))}
+            <div className="flex flex-wrap gap-3 sm:col-span-2">
+              <button type="submit" disabled={saving || loading} className="rounded-lg bg-[#2b4764] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[#1f3650] disabled:cursor-not-allowed disabled:opacity-60">
+                {saving ? 'Menyimpan...' : editingId ? 'Simpan perubahan' : `Tambah ${resource.title.toLowerCase()}`}
               </button>
-            )}
-          </div>
-        </form>
+              {editingId && (
+                <button type="button" onClick={resetForm} className="rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50">
+                  Batal
+                </button>
+              )}
+            </div>
+          </form>
+        )}
 
         <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <h3 className="font-semibold text-slate-900">{resource.title} terdaftar <span className="font-normal text-slate-500">({meta.total})</span></h3>
@@ -686,7 +691,7 @@ export default function DataKependudukan({ role }) {
               <thead className="bg-slate-50 text-xs uppercase tracking-wide text-slate-600">
                 <tr>
                   {resource.columns.map((column) => <th key={column.key} scope="col" className="whitespace-nowrap px-4 py-3 font-semibold">{column.label}</th>)}
-                  <th scope="col" className="px-4 py-3 font-semibold">Aksi</th>
+                  {canManage && <th scope="col" className="px-4 py-3 font-semibold">Aksi</th>}
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-200 bg-white">
@@ -700,12 +705,14 @@ export default function DataKependudukan({ role }) {
                         </td>
                       );
                     })}
-                    <td className="whitespace-nowrap px-4 py-3">
-                      <div className="flex gap-2">
-                        <button type="button" onClick={() => editRecord(record)} className="rounded-md border border-slate-300 px-2.5 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50">Ubah</button>
-                        <button type="button" onClick={() => void deleteRecord(record)} className="rounded-md border border-rose-200 px-2.5 py-1.5 text-xs font-semibold text-rose-700 hover:bg-rose-50">Hapus</button>
-                      </div>
-                    </td>
+                    {canManage && (
+                      <td className="whitespace-nowrap px-4 py-3">
+                        <div className="flex gap-2">
+                          <button type="button" onClick={() => editRecord(record)} className="rounded-md border border-slate-300 px-2.5 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50">Ubah</button>
+                          <button type="button" onClick={() => void deleteRecord(record)} className="rounded-md border border-rose-200 px-2.5 py-1.5 text-xs font-semibold text-rose-700 hover:bg-rose-50">Hapus</button>
+                        </div>
+                      </td>
+                    )}
                   </tr>
                 ))}
               </tbody>

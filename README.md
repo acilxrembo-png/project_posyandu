@@ -35,7 +35,9 @@
 
    Jadwal kegiatan mendatang ditampilkan di beranda dan halaman informasi dari `GET /api/informasi/kegiatan`. Endpoint publik ini hanya mengembalikan tanggal, tema, dan lokasi; tanggal dibandingkan menurut zona waktu `Asia/Jakarta`.
 
-   Admin dan kader dapat mengelola kegiatan, keluarga, warga, profil balita, penimbangan, imunisasi, pemberian suplemen, data dan pemeriksaan kehamilan, serta pemeriksaan lansia dari dashboard setelah masuk. Admin juga dapat membuat dan mengelola akun. Akun kader perlu ditautkan ke Posyandu agar batas akses data dan ringkasan dashboard berlaku dengan benar.
+   **Hak akses:** Admin hanya dapat memantau ringkasan dan membaca laporan, serta menambah atau menghapus akun Kader. Kader mengelola data dan pemeriksaan warga pada Posyandu yang ditautkan ke akunnya, termasuk memverifikasi pendaftaran Warga. Warga mendaftar dengan identitas dan Posyandu, lalu menunggu verifikasi Kader sebelum dapat masuk. Setelah diverifikasi, Warga hanya dapat melihat catatan anak yang profilnya tertaut sebagai anak dari profil Ibu tersebut.
+
+   Kader dapat mengelola jadwal kegiatan, keluarga, warga, profil balita, penimbangan, imunisasi, pemberian suplemen, data dan pemeriksaan kehamilan, serta pemeriksaan lansia. Akun Kader harus ditautkan ke Posyandu. Akun Warga yang telah disetujui dapat melihat perkembangan anak; profil balita perlu mencatat profil Ibu agar catatan tampil pada akun yang benar.
 
 Login contoh setelah seed:
 

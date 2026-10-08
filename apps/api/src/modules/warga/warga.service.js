@@ -91,4 +91,71 @@ async function remove(id, user) {
   await prisma.warga.delete({ where: { id } });
 }
 
-export { list, getById, create, update, remove };
+async function listPendingRegistrations(user) {
+  if (!user.posyanduId) throw httpError(403, "Akun kader belum terhubung ke posyandu");
+
+  const data = await prisma.pendaftaranWarga.findMany({
+    where: { posyanduId: user.posyanduId },
+    include: {
+      user: { select: { id: true, nama: true, email: true, telepon: true, createdAt: true } },
+      posyandu: { select: { nama: true } },
+    },
+    orderBy: { createdAt: "asc" },
+  });
+  return { data };
+}
+
+async function verifyRegistration(userId, actingUser) {
+  if (!actingUser.posyanduId) throw httpError(403, "Akun kader belum terhubung ke posyandu");
+
+  return prisma.$transaction(async (tx) => {
+    const request = await tx.pendaftaranWarga.findFirst({
+      where: {
+        userId,
+        posyanduId: actingUser.posyanduId,
+        user: { role: "Masyarakat", aktif: false },
+      },
+    });
+    if (!request) throw httpError(404, "Pendaftaran warga tidak ditemukan");
+
+    const existingWarga = await tx.warga.findUnique({
+      where: { nik: request.nik },
+      include: { akun: { select: { id: true } } },
+    });
+    if (existingWarga?.posyanduId !== undefined && existingWarga.posyanduId !== request.posyanduId) {
+      throw httpError(409, "NIK sudah terdaftar pada Posyandu lain");
+    }
+    if (existingWarga?.akun) throw httpError(409, "Profil warga sudah terhubung ke akun lain");
+
+    const warga = existingWarga || await tx.warga.create({
+      data: {
+        nama: request.nama,
+        nik: request.nik,
+        tanggalLahir: request.tanggalLahir,
+        jenisKelamin: request.jenisKelamin,
+        telepon: request.telepon,
+        posyanduId: request.posyanduId,
+        aktif: true,
+      },
+      select: { id: true },
+    });
+    if (existingWarga && !existingWarga.aktif) {
+      await tx.warga.update({ where: { id: existingWarga.id }, data: { aktif: true } });
+    }
+
+    const account = await tx.user.update({
+      where: { id: userId },
+      data: {
+        nama: request.nama,
+        telepon: request.telepon,
+        aktif: true,
+        wargaId: warga.id,
+      },
+      select: { id: true, nama: true, email: true },
+    });
+    await tx.pendaftaranWarga.delete({ where: { id: request.id } });
+    return { account, message: "Pendaftaran warga berhasil diverifikasi." };
+  });
+}
+
+export { list, getById, create, update, remove, listPendingRegistrations, verifyRegistration };

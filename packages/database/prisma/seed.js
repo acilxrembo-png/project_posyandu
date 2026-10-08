@@ -218,6 +218,10 @@ async function main() {
       ibuId: ibu.id,
     },
   });
+  await prisma.user.update({
+    where: { email: "warga@posyandu.test" },
+    data: { wargaId: ibu.id },
+  });
 
   // ---------------------------------------------------
   // 7. KEGIATAN (hari buka posyandu)

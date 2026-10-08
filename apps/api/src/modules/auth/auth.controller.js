@@ -7,6 +7,11 @@ async function register(req, res) {
   res.status(201).json(result);
 }
 
+async function registrationPosyandu(req, res) {
+  const result = await authService.listRegistrationPosyandu();
+  res.json(result);
+}
+
 async function login(req, res) {
   const input = loginSchema.parse(req.body);
   const result = await authService.login(input);
@@ -18,4 +23,4 @@ async function me(req, res) {
   res.json({ user });
 }
 
-export { register, login, me };
+export { register, registrationPosyandu, login, me };

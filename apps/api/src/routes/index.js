@@ -1,5 +1,5 @@
 import express from "express";
-import { authenticate, authorize } from "../middleware/auth.middleware.js";
+import { authenticate, authorize, staffReadOnlyAdmin } from "../middleware/auth.middleware.js";
 
 import authRoutes from "../modules/auth/auth.routes.js";
 import usersRoutes from "../modules/users/users.routes.js";
@@ -19,6 +19,7 @@ import kehamilanRoutes from "../modules/kehamilan/kehamilan.routes.js";
 import pemeriksaanKehamilanRoutes from "../modules/pemeriksaan-kehamilan/pemeriksaan-kehamilan.routes.js";
 import pemeriksaanLansiaRoutes from "../modules/pemeriksaan-lansia/pemeriksaan-lansia.routes.js";
 import * as kegiatanController from "../modules/kegiatan/kegiatan.controller.js";
+import * as portalController from "../modules/portal/portal.controller.js";
 
 const router = express.Router();
 
@@ -27,12 +28,18 @@ router.get("/health", (req, res) => res.json({ status: "ok" }));
 router.use("/auth", authRoutes);
 router.get("/informasi/kegiatan", kegiatanController.listPublic);
 
+const portal = express.Router();
+portal.use(authenticate, authorize("Masyarakat"));
+portal.get("/anak", portalController.children);
+router.use("/portal", portal);
+
 // ---------- Khusus ADMIN ----------
 router.use("/users", authenticate, authorize("ADMIN"), usersRoutes);
 
 // ---------- ADMIN & KADER ----------
 const staff = express.Router();
 staff.use(authenticate, authorize("ADMIN", "KADER"));
+staff.use(staffReadOnlyAdmin);
 
 staff.use("/dashboard", dashboardRoutes);
 
