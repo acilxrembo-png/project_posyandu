@@ -108,8 +108,8 @@ const Login = () => {
             />
             <span>Ingat saya</span>
           </label>
-          <Link to="/forgot-password" className="font-medium text-teal-700 transition-colors hover:text-teal-800 hover:underline">
-            Lupa sandi?
+          <Link to="/kontak" className="font-medium text-teal-700 transition-colors hover:text-teal-800 hover:underline">
+            Butuh bantuan masuk?
           </Link>
         </div>
 

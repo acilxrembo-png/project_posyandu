@@ -1,9 +1,10 @@
-const DashboardKader = () => {
-  return (
-    <div>
-      ghjahdghjh
-    </div>
-  )
-}
+import DashboardRingkasan from '../../components/DashboardRingkasan';
 
-export default DashboardKader
+export default function DashboardKader() {
+  return (
+    <DashboardRingkasan
+      title="Dashboard Kader"
+      description="Pantau ringkasan layanan dan data Posyandu."
+    />
+  );
+}
